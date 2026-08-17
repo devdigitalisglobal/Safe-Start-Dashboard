@@ -1,0 +1,129 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.body {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.message {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.secretBox {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  display: grid;
+  gap: 8px;
+}
+
+.secretLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.secretCode {
+  font-size: 14px;
+  word-break: break-all;
+  color: var(--text);
+}
+
+.copyButton {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.qrWrap {
+  align-self: center;
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  min-height: 220px;
+  min-width: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.secret {
+  font-size: 13px;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.input {
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 20px;
+  letter-spacing: 0.3em;
+  text-align: center;
+}
+
+.button {
+  padding: 14px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.linkButton {
+  align-self: flex-start;
+  border: none;
+  background: transparent;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+}

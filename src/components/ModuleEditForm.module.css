@@ -1,0 +1,173 @@
+.wrap {
+  display: grid;
+  gap: 24px;
+}
+
+.section {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.input,
+.textarea {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-size: 14px;
+}
+
+.textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.lessonToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 20px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.primary,
+.secondary {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.primary {
+  border: none;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.secondary {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.primary:disabled,
+.secondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.message {
+  color: var(--success);
+  font-size: 14px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+.workflowIntro {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.statusRow {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status_draft {
+  background: var(--surface-alt);
+  color: var(--text-muted);
+}
+
+.status_review {
+  background: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+}
+
+.status_approved {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success);
+}
+
+.status_published {
+  background: rgba(34, 197, 94, 0.25);
+  color: var(--success);
+}
+
+.danger {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+}
+
+.danger:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.compactDelete {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.readOnlyNote {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.draftCard {
+  padding: 16px;
+  border: 1px dashed var(--primary);
+  border-radius: 12px;
+  background: var(--surface-alt);
+}
+
+.draftIntro {
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}

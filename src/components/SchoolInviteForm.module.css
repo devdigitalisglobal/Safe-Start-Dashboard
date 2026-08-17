@@ -1,0 +1,47 @@
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 220px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+}
+
+.button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.message {
+  width: 100%;
+  color: var(--success);
+  font-size: 14px;
+}
+
+.error {
+  width: 100%;
+  color: var(--danger);
+  font-size: 14px;
+}

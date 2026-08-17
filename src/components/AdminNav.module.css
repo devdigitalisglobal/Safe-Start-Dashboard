@@ -1,0 +1,21 @@
+.nav {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nav a {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.nav a:hover {
+  color: var(--text);
+}
+
+.active {
+  color: var(--primary) !important;
+  font-weight: 600;
+}

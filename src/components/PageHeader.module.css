@@ -1,0 +1,29 @@
+.header {
+  margin-bottom: 24px;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.description {
+  margin-top: 8px;
+  max-width: 720px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}

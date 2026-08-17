@@ -1,0 +1,26 @@
+.hero {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.change {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.placeholder {
+  font-size: 14px;
+  color: var(--text-muted);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+}
