@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { isMfaRequiredError } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import { roleLabel } from '@/lib/roles';
 import type {
@@ -94,6 +95,10 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage('User updated.');
       router.refresh();
     } catch (err) {
+      if (isMfaRequiredError(err)) {
+        router.push('/account/mfa');
+        return;
+      }
       setError(err instanceof Error ? err.message : 'Save failed');
     } finally {
       setLoading(false);
@@ -110,6 +115,10 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage(isDeactivated ? 'User reactivated.' : 'User deactivated.');
       router.refresh();
     } catch (err) {
+      if (isMfaRequiredError(err)) {
+        router.push('/account/mfa');
+        return;
+      }
       setError(err instanceof Error ? err.message : 'Action failed');
     } finally {
       setLoading(false);
@@ -130,6 +139,10 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage('MFA reset. User must enroll a new authenticator on next login.');
       router.refresh();
     } catch (err) {
+      if (isMfaRequiredError(err)) {
+        router.push('/account/mfa');
+        return;
+      }
       setError(err instanceof Error ? err.message : 'MFA reset failed');
     } finally {
       setLoading(false);

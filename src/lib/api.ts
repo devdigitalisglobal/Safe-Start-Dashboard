@@ -51,6 +51,10 @@ export async function apiFetch<T>(
   return res.json() as Promise<T>;
 }
 
+export function isMfaRequiredError(err: unknown) {
+  return err instanceof ApiError && err.code === 'MFA_REQUIRED';
+}
+
 export async function apiGetDashboard<T>(
   section: 'reach' | 'engagement' | 'learning' | 'improvement',
   token: string,
@@ -81,13 +85,15 @@ export async function apiPatchAdmin<T>(
 
   if (!res.ok) {
     let message = res.statusText;
+    let code: string | undefined;
     try {
-      const payload = (await res.json()) as { message?: string };
+      const payload = (await res.json()) as { message?: string; code?: string };
       message = payload.message ?? message;
+      code = payload.code;
     } catch {
       // ignore
     }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, code);
   }
 
   return res.json() as Promise<T>;
@@ -111,13 +117,15 @@ export async function apiPostAdmin<T>(
 
   if (!res.ok) {
     let message = res.statusText;
+    let code: string | undefined;
     try {
-      const payload = (await res.json()) as { message?: string };
+      const payload = (await res.json()) as { message?: string; code?: string };
       message = payload.message ?? message;
+      code = payload.code;
     } catch {
       // ignore
     }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, code);
   }
 
   return res.json() as Promise<T>;
@@ -133,13 +141,15 @@ export async function apiDeleteAdmin<T>(path: string, token: string) {
 
   if (!res.ok) {
     let message = res.statusText;
+    let code: string | undefined;
     try {
-      const payload = (await res.json()) as { message?: string };
+      const payload = (await res.json()) as { message?: string; code?: string };
       message = payload.message ?? message;
+      code = payload.code;
     } catch {
       // ignore
     }
-    throw new ApiError(res.status, message);
+    throw new ApiError(res.status, message, code);
   }
 
   return res.json() as Promise<T>;

@@ -65,6 +65,9 @@ async function requireAuthenticatedProfile(): Promise<{
   try {
     profile = await apiFetch<UserProfile>('/users/me', token);
   } catch (err) {
+    if (err instanceof ApiError && err.code === 'MFA_REQUIRED') {
+      redirect('/account/mfa');
+    }
     if (err instanceof ApiError && err.status === 403) {
       redirect('/login?error=access_denied');
     }
