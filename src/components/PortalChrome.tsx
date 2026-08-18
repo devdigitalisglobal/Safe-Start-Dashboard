@@ -87,7 +87,7 @@ function buildNav(profile: UserProfile) {
       items: [
         {
           href: '/admin/media',
-          label: 'Media library',
+          label: 'Media',
           isActive: (pathname) => pathname.startsWith('/admin/media'),
         },
         {
@@ -104,7 +104,7 @@ function buildNav(profile: UserProfile) {
         {
           href: '/admin/audit',
           label: 'Audit log',
-          isActive: (pathname) => pathname === '/admin/audit',
+          isActive: (pathname) => pathname.startsWith('/admin/audit'),
         },
       ],
     });
@@ -187,9 +187,10 @@ export function PortalChrome({ profile, children }: Props) {
             className={styles.menuButton}
             aria-expanded={menuOpen}
             aria-controls="portal-sidebar"
+            aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             onClick={() => setMenuOpen((open) => !open)}
           >
-            Menu
+            {menuOpen ? 'Close' : 'Menu'}
           </button>
           <p className={styles.mobileTitle}>Safe Start Staff Portal</p>
         </header>

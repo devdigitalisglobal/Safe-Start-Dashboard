@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
-import type { AdminAssessmentsResponse } from '@/lib/types/admin';
+import { contentAssessmentsCrumbs } from '@/lib/cmsBreadcrumbs';import type { AdminAssessmentsResponse } from '@/lib/types/admin';
 import styles from '../modules/page.module.css';
 
 function formatType(type: string) {
@@ -18,8 +18,8 @@ export default async function AdminAssessmentsPage() {
       <PageHeader
         title="Assessments"
         description="Edit knowledge-check questions and tags. Correct answers stay in this portal only — never in the learner app."
+        breadcrumbs={contentAssessmentsCrumbs()}
       />
-
       <div className={styles.tableWrap}>
         <table>
           <thead>

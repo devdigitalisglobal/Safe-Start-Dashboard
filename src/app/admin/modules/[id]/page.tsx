@@ -4,7 +4,8 @@ import { ModuleEditorTabs } from '@/components/ModuleEditorTabs';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { isStaffRole, requireCmsUser } from '@/lib/auth';
-import { parseModuleEditorTab } from '@/lib/moduleEditor';
+import { contentModulesCrumbs } from '@/lib/cmsBreadcrumbs';
+import { moduleEditorTabLabel, parseModuleEditorTab } from '@/lib/moduleEditor';
 import type { AdminModuleDetail, AdminModuleQuizResponse } from '@/lib/types/admin';
 import styles from '../page.module.css';
 
@@ -40,8 +41,11 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
             ? 'Update copy, manage lessons, quiz, and workflow to publish.'
             : 'Read-only content view. Use the workflow tab to approve or reject.'
         }
-        backHref="/admin/modules"
-        backLabel="All modules"
+        breadcrumbs={[
+          ...contentModulesCrumbs(),
+          { label: module.title, href: `/admin/modules/${id}?tab=details` },
+          { label: moduleEditorTabLabel(activeTab) },
+        ]}
       />
 
       {canWrite ? (

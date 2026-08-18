@@ -3,6 +3,7 @@ import { PartnerApiCredentials } from '@/components/PartnerApiCredentials';
 import { PartnerBrandingForm } from '@/components/PartnerBrandingForm';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import { organisationPartnersCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminPartnerCredentialsResponse, AdminPartnerDetail } from '@/lib/types/admin';
 
 type Props = {
@@ -22,8 +23,7 @@ export default async function AdminPartnerDetailPage({ params }: Props) {
       <PageHeader
         title={partner.name}
         description={`Slug: ${partner.slug}${partner.isDefault ? ' · default partner' : ''}`}
-        backHref="/admin/partners"
-        backLabel="All partners"
+        breadcrumbs={[...organisationPartnersCrumbs(), { label: partner.name }]}
       />
       <PartnerBrandingForm partner={partner} />
       <PartnerApiCredentials partnerId={partner.id} credentials={credentialsData.credentials} />

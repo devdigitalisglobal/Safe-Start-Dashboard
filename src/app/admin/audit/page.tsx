@@ -1,4 +1,6 @@
+import Link from 'next/link';
 import { AuditExportButton } from '@/components/AuditExportButton';
+import { EmptyState } from '@/components/EmptyState';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
@@ -22,6 +24,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
   const from = pickParam(params.from);
   const to = pickParam(params.to);
   const type = pickParam(params.type);
+  const hasFilters = Boolean(from || to || type);
 
   const query = new URLSearchParams({ limit: '100' });
   if (from) query.set('from', from);
@@ -36,6 +39,10 @@ export default async function AdminAuditPage({ searchParams }: Props) {
       <PageHeader
         title="Audit log"
         description="A record of staff changes to content, schools, and invitations. Export for compliance or internal review."
+        breadcrumbs={[
+          { label: 'System', href: '/admin/audit' },
+          { label: 'Audit log' },
+        ]}
       />
 
       <AuditExportButton from={from} to={to} type={type} />
@@ -60,6 +67,8 @@ export default async function AdminAuditPage({ searchParams }: Props) {
             <option value="admin_module_approved">Module approved</option>
             <option value="admin_module_rejected">Module rejected</option>
             <option value="admin_module_published">Module published</option>
+            <option value="admin_portal_user_created">Portal user created</option>
+            <option value="admin_mfa_reset">MFA reset</option>
             <option value="admin_school_created">School created</option>
             <option value="admin_invitation_sent">Invitation sent</option>
             <option value="admin_lesson_updated">Lesson updated</option>
@@ -72,23 +81,29 @@ export default async function AdminAuditPage({ searchParams }: Props) {
         </button>
       </form>
 
-      <div className={styles.tableWrap}>
-        <table>
-          <thead>
-            <tr>
-              <th>When</th>
-              <th>Action</th>
-              <th>Staff member</th>
-              <th>Details</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.events.length === 0 ? (
+      {data.events.length === 0 ? (
+        <EmptyState
+          title={hasFilters ? 'No matching events' : 'No admin actions yet'}
+          description={
+            hasFilters
+              ? 'Try widening your date range or choosing a different action type.'
+              : 'Staff changes to modules, schools, team accounts, and MFA will appear here.'
+          }
+          secondaryAction={hasFilters ? { label: 'Clear filters', href: '/admin/audit' } : undefined}
+        />
+      ) : (
+        <div className={styles.tableWrap}>
+          <table>
+            <thead>
               <tr>
-                <td colSpan={4}>No admin actions recorded yet.</td>
+                <th>When</th>
+                <th>Action</th>
+                <th>Staff member</th>
+                <th>Details</th>
               </tr>
-            ) : (
-              data.events.map((event) => (
+            </thead>
+            <tbody>
+              {data.events.map((event) => (
                 <tr key={event.id}>
                   <td>{new Date(event.occurredAt).toLocaleString('en-AU')}</td>
                   <td>{formatEventType(event.type)}</td>
@@ -97,11 +112,11 @@ export default async function AdminAuditPage({ searchParams }: Props) {
                     <code className={styles.code}>{JSON.stringify(event.payload)}</code>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 }

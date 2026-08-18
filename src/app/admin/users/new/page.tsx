@@ -2,6 +2,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { InvitePortalUserForm } from '@/components/InvitePortalUserForm';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import { organisationTeamCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminPartnersResponse, AdminSchoolsResponse } from '@/lib/types/admin';
 
 export default async function AdminUsersNewPage() {
@@ -17,8 +18,7 @@ export default async function AdminUsersNewPage() {
       <PageHeader
         title="Invite portal user"
         description="Create staff, partner, school admin, or reviewer accounts."
-        backHref="/admin/users"
-        backLabel="Team"
+        breadcrumbs={[...organisationTeamCrumbs(), { label: 'Invite user' }]}
       />
 
       <InvitePortalUserForm schools={schoolsData.schools} partners={partnersData.partners} />

@@ -2,6 +2,10 @@ import { PageHeader } from '@/components/PageHeader';
 import { QuestionCreateForm } from '@/components/QuestionCreateForm';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import {
+  contentAssessmentsCrumbs,
+  formatAssessmentType,
+} from '@/lib/cmsBreadcrumbs';
 import type {
   AdminKnowledgeAreasResponse,
   AdminModulesResponse,
@@ -11,10 +15,6 @@ import type {
 type Props = {
   params: Promise<{ type: string }>;
 };
-
-function formatType(type: string) {
-  return type === 'starting_grid' ? 'Starting Grid' : 'Finish Line';
-}
 
 export default async function AdminQuestionCreatePage({ params }: Props) {
   const { type } = await params;
@@ -26,13 +26,18 @@ export default async function AdminQuestionCreatePage({ params }: Props) {
     apiGetAdmin<AdminModulesResponse>('modules', token),
   ]);
 
+  const assessmentLabel = formatAssessmentType(type);
+
   return (
     <>
       <PageHeader
-        title={`New ${formatType(type)} question`}
+        title={`New ${assessmentLabel} question`}
         description={questionsData.assessment.title}
-        backHref={`/admin/assessments/${type}`}
-        backLabel="Question list"
+        breadcrumbs={[
+          ...contentAssessmentsCrumbs(),
+          { label: assessmentLabel, href: `/admin/assessments/${type}` },
+          { label: 'New question' },
+        ]}
       />
 
       <QuestionCreateForm

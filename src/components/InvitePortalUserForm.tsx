@@ -9,6 +9,7 @@ import type {
   AdminSchoolsResponse,
   PortalUserRole,
 } from '@/lib/types/admin';
+import { FormError, FormMessage } from '@/components/FormFeedback';
 import styles from './CreateSchoolForm.module.css';
 
 type Props = {
@@ -106,17 +107,16 @@ export function InvitePortalUserForm({ schools, partners }: Props) {
           {ROLES.find((r) => r.value === created.role)?.label ?? created.role}.
         </p>
         {created.temporaryPassword ? (
-          <p className={styles.message}>
-            Temporary password (shown once):{' '}
-            <code>{created.temporaryPassword}</code>
-          </p>
+          <FormMessage>
+            Temporary password (shown once): <code>{created.temporaryPassword}</code>
+          </FormMessage>
         ) : (
-          <p className={styles.message}>
+          <FormMessage>
             An auth account already existed for this email — profile updated. Reset the password in
             Supabase if they cannot sign in.
-          </p>
+          </FormMessage>
         )}
-        <p className={styles.message}>They must enroll MFA on first login.</p>
+        <FormMessage>They must enroll MFA on first login.</FormMessage>
       </div>
     );
   }
@@ -198,11 +198,7 @@ export function InvitePortalUserForm({ schools, partners }: Props) {
       <button className={styles.button} type="submit" disabled={loading || !isComplete}>
         {loading ? 'Creating…' : 'Create user'}
       </button>
-      {error ? (
-        <p className={styles.error} role="alert">
-          {error}
-        </p>
-      ) : null}
+      {error ? <FormError>{error}</FormError> : null}
     </form>
   );
 }

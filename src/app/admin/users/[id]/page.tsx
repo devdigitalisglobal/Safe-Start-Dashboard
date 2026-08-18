@@ -2,6 +2,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { PortalUserDetailForm } from '@/components/PortalUserDetailForm';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import { organisationTeamCrumbs } from '@/lib/cmsBreadcrumbs';
 import type {
   AdminPartnersResponse,
   AdminPortalUser,
@@ -27,8 +28,7 @@ export default async function AdminUserDetailPage({ params }: Props) {
       <PageHeader
         title={user.fullName}
         description={user.email}
-        backHref="/admin/users"
-        backLabel="Team"
+        breadcrumbs={[...organisationTeamCrumbs(), { label: user.fullName }]}
       />
 
       <PortalUserDetailForm

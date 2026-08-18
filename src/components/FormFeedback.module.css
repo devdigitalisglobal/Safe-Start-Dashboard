@@ -1,0 +1,17 @@
+.message {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--success);
+}
+
+.error {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--danger);
+}
+
+.hint {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}

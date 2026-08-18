@@ -2,6 +2,10 @@ import { PageHeader } from '@/components/PageHeader';
 import { QuestionEditForm } from '@/components/QuestionEditForm';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import {
+  contentAssessmentsCrumbs,
+  formatAssessmentType,
+} from '@/lib/cmsBreadcrumbs';
 import type { AdminKnowledgeAreasResponse, AdminQuestionsResponse } from '@/lib/types/admin';
 
 type Props = {
@@ -17,14 +21,19 @@ export default async function AdminQuestionEditPage({ params }: Props) {
     apiGetAdmin<AdminKnowledgeAreasResponse>('assessments/knowledge-areas', token),
   ]);
 
+  const assessmentLabel = formatAssessmentType(type);
   const question = questionsData.questions.find((q) => q.id === id);
+
   if (!question) {
     return (
       <PageHeader
         title="Question not found"
         description="This question may have been removed. Go back to the assessment question list."
-        backHref={`/admin/assessments/${type}`}
-        backLabel="Question list"
+        breadcrumbs={[
+          ...contentAssessmentsCrumbs(),
+          { label: assessmentLabel, href: `/admin/assessments/${type}` },
+          { label: 'Not found' },
+        ]}
       />
     );
   }
@@ -34,8 +43,11 @@ export default async function AdminQuestionEditPage({ params }: Props) {
       <PageHeader
         title={`Question ${question.orderIndex}`}
         description={questionsData.assessment.title}
-        backHref={`/admin/assessments/${type}`}
-        backLabel="Question list"
+        breadcrumbs={[
+          ...contentAssessmentsCrumbs(),
+          { label: assessmentLabel, href: `/admin/assessments/${type}` },
+          { label: `Question ${question.orderIndex}` },
+        ]}
       />
 
       <QuestionEditForm question={question} knowledgeAreas={areasData.knowledgeAreas} />
