@@ -113,11 +113,35 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
     }
   }
 
+  async function resetMfa() {
+    if (!window.confirm('Reset MFA for this user? They must set up a new authenticator on next login.')) {
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setMessage(null);
+
+    try {
+      await apiCall(`${user.id}/mfa/reset`, 'POST', {});
+      setMessage('MFA reset. User must enroll a new authenticator on next login.');
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'MFA reset failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className={styles.form}>
       <p className={styles.message}>
         {user.email} · {roleLabel(user.role)} ·{' '}
         {user.status === 'deactivated' ? 'Deactivated' : 'Active'}
+        {user.mfaEnrolled === true ? ' · MFA enrolled' : user.mfaEnrolled === false ? ' · MFA not enrolled' : ''}
+        {typeof user.unusedRecoveryCodes === 'number'
+          ? ` · ${user.unusedRecoveryCodes} recovery code${user.unusedRecoveryCodes === 1 ? '' : 's'} left`
+          : ''}
       </p>
 
       <form onSubmit={save}>
@@ -203,8 +227,13 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
         >
           {isDeactivated ? 'Reactivate user' : 'Deactivate user'}
         </button>
-        <button type="button" className={styles.button} disabled title="Ships in Phase 2">
-          Reset MFA (Phase 2)
+        <button
+          type="button"
+          className={styles.button}
+          disabled={loading || isDeactivated}
+          onClick={resetMfa}
+        >
+          Reset MFA
         </button>
       </div>
 

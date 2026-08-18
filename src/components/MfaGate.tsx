@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { isDashboardRole } from '@/lib/access';
+import { generateRecoveryCodes, redeemRecoveryCode } from '@/lib/mfaApi';
 import { renderQrToCanvas, resolveTotpUri } from '@/lib/mfaQr';
+import { RecoveryCodesPanel } from '@/components/RecoveryCodesPanel';
 import styles from './MfaGate.module.css';
 
 type Props = {
@@ -12,7 +14,7 @@ type Props = {
   email: string;
 };
 
-type Step = 'loading' | 'enroll' | 'verify';
+type Step = 'loading' | 'enroll' | 'verify' | 'recovery-codes';
 
 export function MfaGate({ role, email }: Props) {
   const router = useRouter();
@@ -23,6 +25,9 @@ export function MfaGate({ role, email }: Props) {
   const [secret, setSecret] = useState<string | null>(null);
   const [totpUri, setTotpUri] = useState<string | null>(null);
   const [code, setCode] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([]);
+  const [showRecovery, setShowRecovery] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [qrReady, setQrReady] = useState(false);
@@ -96,6 +101,18 @@ export function MfaGate({ role, email }: Props) {
     setStep('verify');
   }
 
+  async function issueRecoveryCodes() {
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.access_token) throw new Error('Not signed in');
+
+    const result = await generateRecoveryCodes(session.access_token);
+    setRecoveryCodes(result.codes);
+    setStep('recovery-codes');
+  }
+
   async function copySecret() {
     if (!secret) return;
     try {
@@ -129,7 +146,13 @@ export function MfaGate({ role, email }: Props) {
       return;
     }
 
-    redirectAfterSuccess();
+    try {
+      await issueRecoveryCodes();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not generate recovery codes');
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleVerifySubmit(e: React.FormEvent) {
@@ -155,6 +178,33 @@ export function MfaGate({ role, email }: Props) {
     redirectAfterSuccess();
   }
 
+  async function handleRecoverySubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error('Not signed in');
+
+      await redeemRecoveryCode(session.access_token, recoveryCode.trim());
+      setRecoveryCode('');
+      setShowRecovery(false);
+      setCode('');
+      setFactorId(null);
+      setChallengeId(null);
+      setStep('loading');
+      await bootstrap();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Recovery failed');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -164,6 +214,15 @@ export function MfaGate({ role, email }: Props) {
 
   if (step === 'loading') {
     return <p className={styles.message}>Preparing multi-factor authentication…</p>;
+  }
+
+  if (step === 'recovery-codes') {
+    return (
+      <RecoveryCodesPanel
+        codes={recoveryCodes}
+        onConfirm={redirectAfterSuccess}
+      />
+    );
   }
 
   return (
@@ -190,44 +249,88 @@ export function MfaGate({ role, email }: Props) {
       {step === 'enroll' ? (
         <div className={styles.qrWrap}>
           <canvas ref={canvasRef} aria-label="Authenticator QR code" />
-          {!qrReady && !error ? (
-            <p className={styles.message}>Generating QR code…</p>
-          ) : null}
+          {!qrReady && !error ? <p className={styles.message}>Generating QR code…</p> : null}
         </div>
       ) : null}
 
-      <form
-        className={styles.form}
-        onSubmit={step === 'enroll' ? handleEnrollSubmit : handleVerifySubmit}
-      >
-        <label className={styles.label}>
-          6-digit code
-          <input
-            className={styles.input}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            pattern="[0-9]*"
-            maxLength={6}
-            required
-            value={code}
-            onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-          />
-        </label>
-
-        {error ? (
-          <p className={styles.error} role="alert">
-            {error}
-          </p>
-        ) : null}
-
-        <button
-          className={styles.button}
-          type="submit"
-          disabled={loading || code.length < 6 || (step === 'enroll' && !factorId)}
+      {!showRecovery ? (
+        <form
+          className={styles.form}
+          onSubmit={step === 'enroll' ? handleEnrollSubmit : handleVerifySubmit}
         >
-          {loading ? 'Verifying…' : step === 'enroll' ? 'Enable MFA' : 'Verify and continue'}
+          <label className={styles.label}>
+            6-digit code
+            <input
+              className={styles.input}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="[0-9]*"
+              maxLength={6}
+              required
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
+            />
+          </label>
+
+          {error ? (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            className={styles.button}
+            type="submit"
+            disabled={loading || code.length < 6 || (step === 'enroll' && !factorId)}
+          >
+            {loading ? 'Verifying…' : step === 'enroll' ? 'Enable MFA' : 'Verify and continue'}
+          </button>
+        </form>
+      ) : (
+        <form className={styles.form} onSubmit={handleRecoverySubmit}>
+          <label className={styles.label}>
+            Recovery code
+            <input
+              className={styles.recoveryInput}
+              autoComplete="off"
+              required
+              value={recoveryCode}
+              onChange={(e) => setRecoveryCode(e.target.value.toUpperCase())}
+              placeholder="XXXX-XXXX-XX"
+            />
+          </label>
+          <p className={styles.body}>
+            Enter a saved recovery code. This removes your current authenticator so you can set up a
+            new one.
+          </p>
+
+          {error ? (
+            <p className={styles.error} role="alert">
+              {error}
+            </p>
+          ) : null}
+
+          <button className={styles.button} type="submit" disabled={loading || recoveryCode.length < 8}>
+            {loading ? 'Checking…' : 'Use recovery code'}
+          </button>
+          <button
+            type="button"
+            className={styles.linkButton}
+            onClick={() => {
+              setShowRecovery(false);
+              setError(null);
+            }}
+          >
+            Back to authenticator code
+          </button>
+        </form>
+      )}
+
+      {step === 'verify' && !showRecovery ? (
+        <button type="button" className={styles.linkButton} onClick={() => setShowRecovery(true)}>
+          Lost authenticator? Use a recovery code
         </button>
-      </form>
+      ) : null}
 
       <button type="button" className={styles.linkButton} onClick={handleSignOut}>
         Sign out

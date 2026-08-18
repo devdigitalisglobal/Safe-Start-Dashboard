@@ -31,6 +31,7 @@ export type AdminPortalUser = {
   /** null until Phase 2 wires Supabase MFA lookup */
   mfaEnrolled: boolean | null;
   status: 'active' | 'deactivated';
+  unusedRecoveryCodes?: number;
 };
 
 export type AdminPortalUsersResponse = {
