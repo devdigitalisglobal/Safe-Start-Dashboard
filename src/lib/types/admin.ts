@@ -11,6 +11,51 @@ export type AdminModuleSummary = {
   outcomeCount: number;
 };
 
+export type AdminModulesResponse = {
+  modules: AdminModuleSummary[];
+};
+
+export type PortalUserRole = 'staff' | 'partner' | 'school_admin' | 'reviewer';
+
+export type AdminPortalUser = {
+  id: string;
+  email: string;
+  fullName: string;
+  role: PortalUserRole;
+  schoolId: string | null;
+  schoolName: string | null;
+  partnerId: string | null;
+  partnerName: string | null;
+  lastActiveAt: string | null;
+  registeredAt: string;
+  /** null until Phase 2 wires Supabase MFA lookup */
+  mfaEnrolled: boolean | null;
+  status: 'active' | 'deactivated';
+};
+
+export type AdminPortalUsersResponse = {
+  users: AdminPortalUser[];
+};
+
+export type AdminModuleQuizOption = {
+  id: string;
+  letter: string;
+  text: string;
+  isCorrect: boolean;
+};
+
+export type AdminModuleQuizQuestion = {
+  id: string;
+  orderIndex: number;
+  text: string;
+  options: AdminModuleQuizOption[];
+};
+
+export type AdminModuleQuizResponse = {
+  moduleId: string;
+  questions: AdminModuleQuizQuestion[];
+};
+
 export type AdminModuleDetail = {
   id: string;
   orderIndex: number;
@@ -33,10 +78,8 @@ export type AdminModuleDetail = {
     imageAlt: string | null;
     takeaways: { id: string; orderIndex: number; text: string }[];
   }[];
-};
-
-export type AdminModulesResponse = {
-  modules: AdminModuleSummary[];
+  /** Populated in Phase 3 */
+  quizQuestions?: AdminModuleQuizQuestion[];
 };
 
 export type AdminAssessmentsResponse = {

@@ -1,10 +1,13 @@
+import { Suspense } from 'react';
 import { ModuleDeleteButton } from '@/components/ModuleDeleteButton';
 import { ModuleEditForm } from '@/components/ModuleEditForm';
+import { ModuleEditorTabs, parseModuleEditorTab } from '@/components/ModuleEditorTabs';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { isStaffRole, requireCmsUser } from '@/lib/auth';
 import type { AdminModuleDetail } from '@/lib/types/admin';
 import styles from '../page.module.css';
+
 type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -15,6 +18,9 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
   const query = await searchParams;
   const initialLessonId =
     typeof query.lesson === 'string' ? query.lesson : undefined;
+  const activeTab = parseModuleEditorTab(
+    typeof query.tab === 'string' ? query.tab : undefined
+  );
   const { token, profile } = await requireCmsUser();
   const module = await apiGetAdmin<AdminModuleDetail>(`modules/${id}`, token);
 
@@ -27,8 +33,8 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
         title={`Module ${module.orderIndex}: ${module.title}`}
         description={
           canWrite
-            ? 'Update copy, manage lessons, and use the workflow steps to publish.'
-            : 'Read-only content view. Use the workflow actions to approve or reject.'
+            ? 'Update copy, manage lessons, quiz, and workflow to publish.'
+            : 'Read-only content view. Use the workflow tab to approve or reject.'
         }
         backHref="/admin/modules"
         backLabel="All modules"
@@ -40,12 +46,17 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
         </div>
       ) : null}
 
+      <Suspense fallback={<p className={styles.tabLoading}>Loading editor…</p>}>
+        <ModuleEditorTabs moduleId={module.id} activeTab={activeTab} />
+      </Suspense>
+
       <ModuleEditForm
-        key={`${module.id}-${module.lessons.length}-${module.updatedAt}`}
+        key={`${module.id}-${module.lessons.length}-${module.updatedAt}-${activeTab}`}
         module={module}
         canWrite={canWrite}
         canReview={canReview}
         initialLessonId={initialLessonId}
+        activeTab={activeTab}
       />
     </>
   );

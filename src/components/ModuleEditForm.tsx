@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import type { AdminModuleDetail } from '@/lib/types/admin';
 import { MediaPicker } from '@/components/MediaPicker';
 import { LessonReorderList } from '@/components/LessonReorderList';
+import { ModuleQuizPlaceholder } from '@/components/ModuleQuizPlaceholder';
+import type { ModuleEditorTab } from '@/components/ModuleEditorTabs';
 import styles from './ModuleEditForm.module.css';
 
 type Props = {
@@ -13,6 +15,7 @@ type Props = {
   canWrite: boolean;
   canReview: boolean;
   initialLessonId?: string;
+  activeTab?: ModuleEditorTab;
 };
 
 const STATUS_LABELS: Record<string, string> = {
@@ -22,7 +25,13 @@ const STATUS_LABELS: Record<string, string> = {
   published: 'Published',
 };
 
-export function ModuleEditForm({ module, canWrite, canReview, initialLessonId }: Props) {
+export function ModuleEditForm({
+  module,
+  canWrite,
+  canReview,
+  initialLessonId,
+  activeTab = 'details',
+}: Props) {
   const router = useRouter();
   const initialLesson =
     module.lessons.find((l) => l.id === initialLessonId) ?? module.lessons[0];
@@ -285,6 +294,7 @@ export function ModuleEditForm({ module, canWrite, canReview, initialLessonId }:
 
   return (
     <div className={styles.wrap}>
+      {activeTab === 'workflow' ? (
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Workflow</h2>
         <p className={styles.workflowIntro}>
@@ -354,7 +364,9 @@ export function ModuleEditForm({ module, canWrite, canReview, initialLessonId }:
           </label>
         ) : null}
       </section>
+      ) : null}
 
+      {activeTab === 'details' ? (
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Module details</h2>
         {readOnly ? (
@@ -404,7 +416,9 @@ export function ModuleEditForm({ module, canWrite, canReview, initialLessonId }:
           </button>
         ) : null}
       </section>
+      ) : null}
 
+      {activeTab === 'lessons' ? (
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Lessons</h2>
         <p className={styles.workflowIntro}>
@@ -565,6 +579,9 @@ export function ModuleEditForm({ module, canWrite, canReview, initialLessonId }:
           </>
         )}
       </section>
+      ) : null}
+
+      {activeTab === 'quiz' ? <ModuleQuizPlaceholder canWrite={canWrite} /> : null}
 
       {message ? (
         <p className={styles.message} role="status">

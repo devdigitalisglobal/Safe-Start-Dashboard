@@ -31,12 +31,38 @@
   font-weight: 600;
 }
 
+.tabLoading {
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
 .link:hover {
   text-decoration: underline;
 }
 
 .deleteWrap {
   margin-bottom: 16px;
+}
+
+.introActions {
+  margin-bottom: 20px;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.primaryButton:hover {
+  opacity: 0.92;
 }
 
 .subheading {

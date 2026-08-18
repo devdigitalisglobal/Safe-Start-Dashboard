@@ -37,7 +37,7 @@ function buildNav(profile: UserProfile) {
   }
 
   if (isCmsRole(profile.role)) {
-    const cmsItems: NavItem[] = [
+    const contentItems: NavItem[] = [
       {
         href: '/admin/modules',
         label: profile.role === 'reviewer' ? 'Modules to review' : 'Modules',
@@ -46,21 +46,27 @@ function buildNav(profile: UserProfile) {
     ];
 
     if (isStaffRole(profile.role)) {
-      cmsItems.push(
-        {
-          href: '/admin/assessments',
-          label: 'Assessments',
-          isActive: (pathname) => pathname.startsWith('/admin/assessments'),
-        },
+      contentItems.push({
+        href: '/admin/assessments',
+        label: 'Assessments',
+        isActive: (pathname) => pathname.startsWith('/admin/assessments'),
+      });
+    }
+
+    sections.push({
+      title: profile.role === 'reviewer' ? 'Review' : 'Content',
+      items: contentItems,
+    });
+  }
+
+  if (isStaffRole(profile.role)) {
+    sections.push({
+      title: 'Organisation',
+      items: [
         {
           href: '/admin/schools',
           label: 'Schools',
           isActive: (pathname) => pathname.startsWith('/admin/schools'),
-        },
-        {
-          href: '/admin/media',
-          label: 'Media library',
-          isActive: (pathname) => pathname.startsWith('/admin/media'),
         },
         {
           href: '/admin/partners',
@@ -69,21 +75,38 @@ function buildNav(profile: UserProfile) {
             pathname.startsWith('/admin/partners') || pathname.startsWith('/admin/branding'),
         },
         {
+          href: '/admin/users',
+          label: 'Team',
+          isActive: (pathname) => pathname.startsWith('/admin/users'),
+        },
+      ],
+    });
+
+    sections.push({
+      title: 'Library',
+      items: [
+        {
+          href: '/admin/media',
+          label: 'Media library',
+          isActive: (pathname) => pathname.startsWith('/admin/media'),
+        },
+        {
           href: '/admin/resources',
           label: 'Learner resources',
           isActive: (pathname) => pathname.startsWith('/admin/resources'),
         },
+      ],
+    });
+
+    sections.push({
+      title: 'System',
+      items: [
         {
           href: '/admin/audit',
           label: 'Audit log',
           isActive: (pathname) => pathname === '/admin/audit',
-        }
-      );
-    }
-
-    sections.push({
-      title: profile.role === 'reviewer' ? 'Review' : 'Content management',
-      items: cmsItems,
+        },
+      ],
     });
   }
 
@@ -150,6 +173,9 @@ export function PortalChrome({ profile, children }: Props) {
             {roleLabel(profile.role)}
             {profile.school?.name ? ` · ${profile.school.name}` : ''}
           </p>
+          <Link href="/account/security" className={styles.accountLink} onClick={closeMenu}>
+            Account security
+          </Link>
           <SignOutButton />
         </div>
       </aside>
