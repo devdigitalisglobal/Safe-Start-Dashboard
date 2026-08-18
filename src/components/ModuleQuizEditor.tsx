@@ -7,7 +7,6 @@ import type { AdminModuleQuizQuestion } from '@/lib/types/admin';
 import styles from './QuestionEditForm.module.css';
 
 const LETTERS = ['A', 'B', 'C', 'D'] as const;
-const MAX_QUESTIONS = 3;
 
 type QuizOptionState = {
   letter: (typeof LETTERS)[number];
@@ -90,15 +89,12 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
 
   const readOnly = !canWrite;
 
-  const canAddQuestion = questions.length < MAX_QUESTIONS;
-
   const isComplete = useMemo(
     () => questions.length > 0 && questions.every(isQuestionComplete),
     [questions]
   );
 
   function addQuestion() {
-    if (!canAddQuestion) return;
     setQuestions((prev) => renumberQuestions([...prev, emptyQuestion(prev.length + 1)]));
     setMessage(null);
     setError(null);
@@ -190,9 +186,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
       }
 
       setMessage(
-        questions.length === MAX_QUESTIONS
-          ? 'Module quiz saved.'
-          : `Saved ${questions.length} question${questions.length === 1 ? '' : 's'}. Add up to ${MAX_QUESTIONS} before publish.`
+        questions.length === 0 ? 'Quiz cleared.' : `Saved ${questions.length} question${questions.length === 1 ? '' : 's'}.`
       );
       router.refresh();
     } catch (err) {
@@ -205,24 +199,16 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
   return (
     <section className={styles.wrap}>
       <p className={styles.intro}>
-        Up to three questions shown in the learner app after lessons and before the summary.
-        Exactly one correct answer per question. All three are required before submit for review or
+        Questions shown in the learner app after lessons and before the summary. Exactly one correct
+        answer per question. Any saved questions must be complete before submit for review or
         publish.
       </p>
 
       {canWrite ? (
         <div className={styles.toolbar}>
-          <button
-            type="button"
-            className={styles.addButton}
-            disabled={!canAddQuestion}
-            onClick={addQuestion}
-          >
+          <button type="button" className={styles.addButton} onClick={addQuestion}>
             Add question
           </button>
-          {!canAddQuestion ? (
-            <span className={styles.hint}>Maximum of {MAX_QUESTIONS} questions per module.</span>
-          ) : null}
         </div>
       ) : null}
 
@@ -286,14 +272,14 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
         </fieldset>
       ))}
 
-      {canWrite && questions.length > 0 ? (
+      {canWrite ? (
         <button
           type="button"
           className={styles.save}
-          disabled={loading || !isComplete}
+          disabled={loading || (questions.length > 0 && !isComplete)}
           onClick={save}
         >
-          {loading ? 'Saving…' : 'Save quiz'}
+          {loading ? 'Saving…' : questions.length === 0 ? 'Save (no quiz)' : 'Save quiz'}
         </button>
       ) : null}
 

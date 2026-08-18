@@ -14,7 +14,7 @@ export default async function AdminUsersPage() {
     <>
       <PageHeader
         title="Team"
-        description="Portal users who can sign in to reporting and content tools. Invite and manage access — full provisioning ships in Phase 1."
+        description="Portal users who can sign in to reporting and content tools."
       />
 
       <div className={styles.introActions}>
@@ -38,7 +38,8 @@ export default async function AdminUsersPage() {
                 <th>Role</th>
                 <th>Scope</th>
                 <th>Last active</th>
-                <th>MFA</th>
+                <th>Status</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -53,7 +54,12 @@ export default async function AdminUsersPage() {
                       ? new Date(user.lastActiveAt).toLocaleDateString('en-AU')
                       : '—'}
                   </td>
-                  <td>{user.mfaEnrolled === null ? '—' : user.mfaEnrolled ? 'Yes' : 'No'}</td>
+                  <td>{user.status === 'deactivated' ? 'Deactivated' : 'Active'}</td>
+                  <td>
+                    <Link className={styles.link} href={`/admin/users/${user.id}`}>
+                      Manage
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
