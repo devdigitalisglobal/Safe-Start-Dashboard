@@ -27,6 +27,12 @@ export default async function AdminAssessmentQuestionsPage({ params }: Props) {
         backLabel="All assessments"
       />
 
+      <div className={styles.introActions}>
+        <Link className={styles.primaryButton} href={`/admin/assessments/${type}/questions/new`}>
+          Add question
+        </Link>
+      </div>
+
       <div className={styles.tableWrap}>
         <table>
           <thead>
@@ -38,21 +44,29 @@ export default async function AdminAssessmentQuestionsPage({ params }: Props) {
             </tr>
           </thead>
           <tbody>
-            {data.questions.map((question) => (
-              <tr key={question.id}>
-                <td>{question.orderIndex}</td>
-                <td>{question.text}</td>
-                <td>{question.knowledgeArea.name}</td>
-                <td>
-                  <Link
-                    className={styles.link}
-                    href={`/admin/assessments/${type}/questions/${question.id}`}
-                  >
-                    Edit
-                  </Link>
+            {data.questions.length === 0 ? (
+              <tr>
+                <td colSpan={4}>
+                  <p className={styles.intro}>No questions yet. Use Add question to create the first one.</p>
                 </td>
               </tr>
-            ))}
+            ) : (
+              data.questions.map((question) => (
+                <tr key={question.id}>
+                  <td>{question.orderIndex}</td>
+                  <td>{question.text}</td>
+                  <td>{question.knowledgeArea.name}</td>
+                  <td>
+                    <Link
+                      className={styles.link}
+                      href={`/admin/assessments/${type}/questions/${question.id}`}
+                    >
+                      Edit
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

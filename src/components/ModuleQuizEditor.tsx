@@ -7,6 +7,7 @@ import type { AdminModuleQuizQuestion } from '@/lib/types/admin';
 import styles from './QuestionEditForm.module.css';
 
 const LETTERS = ['A', 'B', 'C', 'D'] as const;
+const MAX_QUESTIONS = 3;
 
 type QuizOptionState = {
   letter: (typeof LETTERS)[number];
@@ -15,7 +16,7 @@ type QuizOptionState = {
 };
 
 type QuizQuestionState = {
-  orderIndex: 1 | 2 | 3;
+  orderIndex: number;
   text: string;
   options: QuizOptionState[];
 };
@@ -26,7 +27,7 @@ type Props = {
   canWrite: boolean;
 };
 
-function emptyQuestion(orderIndex: 1 | 2 | 3): QuizQuestionState {
+function emptyQuestion(orderIndex: number): QuizQuestionState {
   return {
     orderIndex,
     text: '',
@@ -38,60 +39,84 @@ function emptyQuestion(orderIndex: 1 | 2 | 3): QuizQuestionState {
   };
 }
 
-function normalizeQuestions(questions: AdminModuleQuizQuestion[]): QuizQuestionState[] {
-  const byOrder = new Map(questions.map((q) => [q.orderIndex, q]));
-  return ([1, 2, 3] as const).map((orderIndex) => {
-    const existing = byOrder.get(orderIndex);
-    if (!existing) return emptyQuestion(orderIndex);
-
-    const options = LETTERS.map((letter) => {
-      const opt = existing.options.find((o) => o.letter === letter);
-      return {
-        letter,
-        text: opt?.text ?? '',
-        isCorrect: opt?.isCorrect ?? false,
-      };
-    });
-
-    if (!options.some((o) => o.isCorrect)) {
-      options[0].isCorrect = true;
-    }
-
+function fromApiQuestion(question: AdminModuleQuizQuestion): QuizQuestionState {
+  const options = LETTERS.map((letter) => {
+    const opt = question.options.find((o) => o.letter === letter);
     return {
-      orderIndex,
-      text: existing.text,
-      options,
+      letter,
+      text: opt?.text ?? '',
+      isCorrect: opt?.isCorrect ?? false,
     };
   });
+
+  if (!options.some((o) => o.isCorrect)) {
+    options[0].isCorrect = true;
+  }
+
+  return {
+    orderIndex: question.orderIndex,
+    text: question.text,
+    options,
+  };
+}
+
+function renumberQuestions(questions: QuizQuestionState[]): QuizQuestionState[] {
+  return questions.map((question, index) => ({
+    ...question,
+    orderIndex: index + 1,
+  }));
+}
+
+function isQuestionComplete(question: QuizQuestionState) {
+  return (
+    question.text.trim().length > 0 &&
+    question.options.every((o) => o.text.trim().length > 0) &&
+    question.options.filter((o) => o.isCorrect).length === 1
+  );
 }
 
 export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props) {
   const router = useRouter();
-  const [questions, setQuestions] = useState(() => normalizeQuestions(initialQuestions));
+  const [questions, setQuestions] = useState(() =>
+    renumberQuestions(
+      [...initialQuestions]
+        .sort((a, b) => a.orderIndex - b.orderIndex)
+        .map(fromApiQuestion)
+    )
+  );
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const readOnly = !canWrite;
 
+  const canAddQuestion = questions.length < MAX_QUESTIONS;
+
   const isComplete = useMemo(
-    () =>
-      questions.every(
-        (q) =>
-          q.text.trim().length > 0 &&
-          q.options.every((o) => o.text.trim().length > 0) &&
-          q.options.filter((o) => o.isCorrect).length === 1
-      ),
+    () => questions.length > 0 && questions.every(isQuestionComplete),
     [questions]
   );
 
-  function updateQuestionText(orderIndex: 1 | 2 | 3, text: string) {
+  function addQuestion() {
+    if (!canAddQuestion) return;
+    setQuestions((prev) => renumberQuestions([...prev, emptyQuestion(prev.length + 1)]));
+    setMessage(null);
+    setError(null);
+  }
+
+  function removeQuestion(orderIndex: number) {
+    setQuestions((prev) => renumberQuestions(prev.filter((q) => q.orderIndex !== orderIndex)));
+    setMessage(null);
+    setError(null);
+  }
+
+  function updateQuestionText(orderIndex: number, text: string) {
     setQuestions((prev) =>
       prev.map((q) => (q.orderIndex === orderIndex ? { ...q, text } : q))
     );
   }
 
-  function updateOptionText(orderIndex: 1 | 2 | 3, letter: string, text: string) {
+  function updateOptionText(orderIndex: number, letter: string, text: string) {
     setQuestions((prev) =>
       prev.map((q) =>
         q.orderIndex === orderIndex
@@ -104,7 +129,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
     );
   }
 
-  function setCorrect(orderIndex: 1 | 2 | 3, letter: string) {
+  function setCorrect(orderIndex: number, letter: string) {
     setQuestions((prev) =>
       prev.map((q) =>
         q.orderIndex === orderIndex
@@ -133,7 +158,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
       if (!apiUrl) throw new Error('API URL is not configured');
 
       const payload = {
-        questions: questions.map((q) => ({
+        questions: renumberQuestions(questions).map((q) => ({
           orderIndex: q.orderIndex,
           text: q.text.trim(),
           options: q.options.map((o) => ({
@@ -164,7 +189,11 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
         throw new Error(detail);
       }
 
-      setMessage('Module quiz saved.');
+      setMessage(
+        questions.length === MAX_QUESTIONS
+          ? 'Module quiz saved.'
+          : `Saved ${questions.length} question${questions.length === 1 ? '' : 's'}. Add up to ${MAX_QUESTIONS} before publish.`
+      );
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed');
@@ -176,13 +205,49 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
   return (
     <section className={styles.wrap}>
       <p className={styles.intro}>
-        Three questions shown in the learner app after lessons and before the summary. Exactly one
-        correct answer per question. Required before submit for review or publish.
+        Up to three questions shown in the learner app after lessons and before the summary.
+        Exactly one correct answer per question. All three are required before submit for review or
+        publish.
       </p>
+
+      {canWrite ? (
+        <div className={styles.toolbar}>
+          <button
+            type="button"
+            className={styles.addButton}
+            disabled={!canAddQuestion}
+            onClick={addQuestion}
+          >
+            Add question
+          </button>
+          {!canAddQuestion ? (
+            <span className={styles.hint}>Maximum of {MAX_QUESTIONS} questions per module.</span>
+          ) : null}
+        </div>
+      ) : null}
+
+      {questions.length === 0 ? (
+        <p className={styles.hint}>
+          {canWrite
+            ? 'No quiz questions yet. Use Add question to create the first one.'
+            : 'No quiz questions have been added for this module.'}
+        </p>
+      ) : null}
 
       {questions.map((question) => (
         <fieldset key={question.orderIndex} className={styles.fieldset}>
-          <legend className={styles.legend}>Question {question.orderIndex}</legend>
+          <legend className={styles.legendRow}>
+            <span>Question {question.orderIndex}</span>
+            {canWrite ? (
+              <button
+                type="button"
+                className={styles.removeButton}
+                onClick={() => removeQuestion(question.orderIndex)}
+              >
+                Remove
+              </button>
+            ) : null}
+          </legend>
 
           <label className={styles.label}>
             Question text
@@ -221,7 +286,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
         </fieldset>
       ))}
 
-      {canWrite ? (
+      {canWrite && questions.length > 0 ? (
         <button
           type="button"
           className={styles.save}
@@ -232,8 +297,10 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
         </button>
       ) : null}
 
-      {canWrite && !isComplete ? (
-        <p className={styles.hint}>Fill in all questions and options, and mark one correct answer each.</p>
+      {canWrite && questions.length > 0 && !isComplete ? (
+        <p className={styles.hint}>
+          Fill in all questions and options, and mark one correct answer each.
+        </p>
       ) : null}
 
       {message ? (
