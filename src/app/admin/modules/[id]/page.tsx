@@ -1,10 +1,10 @@
-import { Suspense } from 'react';
 import { ModuleDeleteButton } from '@/components/ModuleDeleteButton';
 import { ModuleEditForm } from '@/components/ModuleEditForm';
-import { ModuleEditorTabs, parseModuleEditorTab } from '@/components/ModuleEditorTabs';
+import { ModuleEditorTabs } from '@/components/ModuleEditorTabs';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { isStaffRole, requireCmsUser } from '@/lib/auth';
+import { parseModuleEditorTab } from '@/lib/moduleEditor';
 import type { AdminModuleDetail } from '@/lib/types/admin';
 import styles from '../page.module.css';
 
@@ -46,12 +46,10 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
         </div>
       ) : null}
 
-      <Suspense fallback={<p className={styles.tabLoading}>Loading editor…</p>}>
-        <ModuleEditorTabs moduleId={module.id} activeTab={activeTab} />
-      </Suspense>
+      <ModuleEditorTabs activeTab={activeTab} lessonId={initialLessonId} />
 
       <ModuleEditForm
-        key={`${module.id}-${module.lessons.length}-${module.updatedAt}-${activeTab}`}
+        key={`${module.id}-${module.updatedAt}`}
         module={module}
         canWrite={canWrite}
         canReview={canReview}

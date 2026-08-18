@@ -7,7 +7,7 @@ import type { AdminModuleDetail } from '@/lib/types/admin';
 import { MediaPicker } from '@/components/MediaPicker';
 import { LessonReorderList } from '@/components/LessonReorderList';
 import { ModuleQuizPlaceholder } from '@/components/ModuleQuizPlaceholder';
-import type { ModuleEditorTab } from '@/components/ModuleEditorTabs';
+import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditForm.module.css';
 
 type Props = {

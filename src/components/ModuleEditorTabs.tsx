@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditorTabs.module.css';
-
-export type ModuleEditorTab = 'details' | 'lessons' | 'quiz' | 'workflow';
 
 const TABS: { id: ModuleEditorTab; label: string }[] = [
   { id: 'details', label: 'Details' },
@@ -14,20 +13,18 @@ const TABS: { id: ModuleEditorTab; label: string }[] = [
 ];
 
 type Props = {
-  moduleId: string;
   activeTab: ModuleEditorTab;
+  lessonId?: string;
 };
 
-export function ModuleEditorTabs({ moduleId, activeTab }: Props) {
+export function ModuleEditorTabs({ activeTab, lessonId }: Props) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const lesson = searchParams.get('lesson');
 
   function hrefFor(tab: ModuleEditorTab) {
     const params = new URLSearchParams();
     params.set('tab', tab);
-    if (tab === 'lessons' && lesson) {
-      params.set('lesson', lesson);
+    if (tab === 'lessons' && lessonId) {
+      params.set('lesson', lessonId);
     }
     return `${pathname}?${params.toString()}`;
   }
@@ -49,9 +46,4 @@ export function ModuleEditorTabs({ moduleId, activeTab }: Props) {
       })}
     </nav>
   );
-}
-
-export function parseModuleEditorTab(value: string | undefined): ModuleEditorTab {
-  if (value === 'lessons' || value === 'quiz' || value === 'workflow') return value;
-  return 'details';
 }

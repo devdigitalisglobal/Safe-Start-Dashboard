@@ -1,5 +1,4 @@
-import styles from './account.module.css';
-
+/** Minimal wrapper — MFA page supplies its own full layout. */
 export default function AccountLayout({ children }: LayoutProps<'/account'>) {
-  return <div className={styles.page}>{children}</div>;
+  return <>{children}</>;
 }

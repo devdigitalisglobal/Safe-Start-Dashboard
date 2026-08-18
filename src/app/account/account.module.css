@@ -1,20 +1,22 @@
-.page {
+.root {
   min-height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 32px 24px 64px;
   background: var(--bg);
 }
 
-.card {
+.shell {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+}
+
+.header {
+  margin-bottom: 28px;
 }
 
 .back {
   display: inline-block;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   font-size: 14px;
   font-weight: 600;
   color: var(--primary);
@@ -30,43 +32,61 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin: 0 0 10px;
+  line-height: 1.2;
 }
 
-.body {
+.subtitle {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text-muted);
-  margin-bottom: 20px;
+  margin: 0;
+}
+
+.subtitle strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .panel {
-  padding: 16px;
+  padding: 20px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface);
-  margin-bottom: 16px;
 }
 
 .panelTitle {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin: 0 0 10px;
 }
 
 .panelBody {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--text-muted);
+  margin: 0;
+}
+
+.panelBody + .panelBody {
+  margin-top: 12px;
 }
 
 .link {
+  display: inline-block;
+  margin-top: 14px;
   font-size: 14px;
   font-weight: 600;
   color: var(--primary);
@@ -75,4 +95,15 @@
 
 .link:hover {
   text-decoration: underline;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(30, 111, 232, 0.15);
+  color: var(--primary);
 }
