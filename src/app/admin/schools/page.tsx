@@ -3,6 +3,7 @@ import { CreateSchoolForm } from '@/components/CreateSchoolForm';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { requireStaffUser } from '@/lib/auth';
+import { organisationSchoolsCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminSchoolsResponse } from '@/lib/types/admin';
 import styles from '../modules/page.module.css';
 
@@ -15,6 +16,7 @@ export default async function AdminSchoolsPage() {
       <PageHeader
         title="Schools"
         description="Add participating schools and send student invitations. Students can also join with a school invite code at signup."
+        breadcrumbs={organisationSchoolsCrumbs()}
       />
 
       <CreateSchoolForm />

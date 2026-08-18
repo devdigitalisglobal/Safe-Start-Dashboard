@@ -1,7 +1,7 @@
 import { PageHeader } from '@/components/PageHeader';
 import { PortalUserDetailForm } from '@/components/PortalUserDetailForm';
 import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { requireSuperAdminUser } from '@/lib/auth';
 import { organisationTeamCrumbs } from '@/lib/cmsBreadcrumbs';
 import type {
   AdminPartnersResponse,
@@ -15,7 +15,7 @@ type Props = {
 
 export default async function AdminUserDetailPage({ params }: Props) {
   const { id } = await params;
-  const { token } = await requireStaffUser();
+  const { token } = await requireSuperAdminUser();
 
   const [user, schoolsData, partnersData] = await Promise.all([
     apiGetAdmin<AdminPortalUser>(`users/${id}`, token),

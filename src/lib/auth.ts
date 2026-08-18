@@ -8,6 +8,8 @@ import {
   isDashboardRole,
   isPortalRole,
   isStaffRole,
+  isSuperAdminRole,
+  SUPER_ADMIN_ROLES,
   type CmsRole,
   type DashboardRole,
   type StaffRole,
@@ -24,6 +26,7 @@ export {
   isDashboardRole,
   isPortalRole,
   isStaffRole,
+  isSuperAdminRole,
   type CmsRole,
   type DashboardRole,
   type StaffRole,
@@ -117,6 +120,19 @@ export async function requireStaffUser(): Promise<{
 
   if (!isStaffRole(session.profile.role)) {
     redirect('/admin/modules?error=staff_only');
+  }
+
+  return session;
+}
+
+export async function requireSuperAdminUser(): Promise<{
+  token: string;
+  profile: UserProfile;
+}> {
+  const session = await requirePortalUser();
+
+  if (!isSuperAdminRole(session.profile.role)) {
+    redirect('/admin/modules?error=super_admin_only');
   }
 
   return session;

@@ -1,10 +1,17 @@
-export const DASHBOARD_ROLES = ['staff', 'partner', 'school_admin'] as const;
-export const CMS_ROLES = ['staff', 'reviewer'] as const;
-export const STAFF_ROLES = ['staff'] as const;
+export const SUPER_ADMIN_ROLE = 'super_admin' as const;
+
+export const DASHBOARD_ROLES = ['staff', 'super_admin', 'partner', 'school_admin'] as const;
+export const CMS_ROLES = ['staff', 'super_admin', 'reviewer'] as const;
+export const STAFF_ROLES = ['staff', 'super_admin'] as const;
+export const SUPER_ADMIN_ROLES = [SUPER_ADMIN_ROLE] as const;
 
 export type DashboardRole = (typeof DASHBOARD_ROLES)[number];
 export type CmsRole = (typeof CMS_ROLES)[number];
 export type StaffRole = (typeof STAFF_ROLES)[number];
+
+export function isSuperAdminRole(role: string) {
+  return role === SUPER_ADMIN_ROLE;
+}
 
 export function isStaffRole(role: string): role is StaffRole {
   return (STAFF_ROLES as readonly string[]).includes(role);

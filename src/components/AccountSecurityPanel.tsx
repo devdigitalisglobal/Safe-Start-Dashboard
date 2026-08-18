@@ -173,8 +173,8 @@ export function AccountSecurityPanel({ mfaRequired }: Props) {
       <section className={styles.panel}>
         <h2 className={styles.panelTitle}>Lost your authenticator?</h2>
         <p className={styles.panelBody}>
-          Use a recovery code on the MFA screen, or ask an Auto Verifi administrator to reset MFA
-          from the Team page.
+          Use a recovery code on the MFA screen, or ask the super admin to reset MFA from the Team
+          page.
         </p>
       </section>
     </>

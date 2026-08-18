@@ -5,6 +5,7 @@ import { ModuleReorderList } from '@/components/ModuleReorderList';
 import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { isStaffRole, requireCmsUser } from '@/lib/auth';
+import { contentModulesCrumbs, organisationSchoolsCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminModulesResponse } from '@/lib/types/admin';
 import styles from './page.module.css';
 
@@ -15,6 +16,7 @@ type Props = {
 export default async function AdminModulesPage({ searchParams }: Props) {
   const params = await searchParams;
   const staffOnlyNotice = params.error === 'staff_only';
+  const superAdminOnlyNotice = params.error === 'super_admin_only';
   const { token, profile } = await requireCmsUser();
   const data = await apiGetAdmin<AdminModulesResponse>('modules', token);
   const canWrite = isStaffRole(profile.role);
@@ -28,11 +30,19 @@ export default async function AdminModulesPage({ searchParams }: Props) {
             ? 'Create, edit, reorder, and remove modules. Move drafts through review before publishing to the learner app.'
             : 'Review modules submitted by staff. Approve when ready, or send back to draft with notes.'
         }
+        breadcrumbs={contentModulesCrumbs()}
       />
 
       {staffOnlyNotice ? (
         <p className={styles.notice} role="status">
           That section is limited to staff editors. Use the menu on the left to navigate.
+        </p>
+      ) : null}
+
+      {superAdminOnlyNotice ? (
+        <p className={styles.notice} role="status">
+          Team management and MFA reset are limited to the super admin account. Use the menu on the
+          left to navigate.
         </p>
       ) : null}
 

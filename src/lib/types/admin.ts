@@ -16,12 +16,13 @@ export type AdminModulesResponse = {
 };
 
 export type PortalUserRole = 'staff' | 'partner' | 'school_admin' | 'reviewer';
+export type PortalDirectoryRole = PortalUserRole | 'super_admin';
 
 export type AdminPortalUser = {
   id: string;
   email: string;
   fullName: string;
-  role: PortalUserRole;
+  role: PortalDirectoryRole;
   schoolId: string | null;
   schoolName: string | null;
   partnerId: string | null;

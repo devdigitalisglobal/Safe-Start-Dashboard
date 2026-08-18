@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { SignOutButton } from '@/components/SignOutButton';
-import { isCmsRole, isDashboardRole, isStaffRole } from '@/lib/access';
+import { isCmsRole, isDashboardRole, isStaffRole, isSuperAdminRole } from '@/lib/access';
 import { roleLabel } from '@/lib/roles';
 import type { UserProfile } from '@/lib/types/dashboard';
 import styles from './PortalChrome.module.css';
@@ -60,26 +60,31 @@ function buildNav(profile: UserProfile) {
   }
 
   if (isStaffRole(profile.role)) {
+    const organisationItems: NavItem[] = [
+      {
+        href: '/admin/schools',
+        label: 'Schools',
+        isActive: (pathname) => pathname.startsWith('/admin/schools'),
+      },
+      {
+        href: '/admin/partners',
+        label: 'Partners',
+        isActive: (pathname) =>
+          pathname.startsWith('/admin/partners') || pathname.startsWith('/admin/branding'),
+      },
+    ];
+
+    if (isSuperAdminRole(profile.role)) {
+      organisationItems.push({
+        href: '/admin/users',
+        label: 'Team',
+        isActive: (pathname) => pathname.startsWith('/admin/users'),
+      });
+    }
+
     sections.push({
       title: 'Organisation',
-      items: [
-        {
-          href: '/admin/schools',
-          label: 'Schools',
-          isActive: (pathname) => pathname.startsWith('/admin/schools'),
-        },
-        {
-          href: '/admin/partners',
-          label: 'Partners',
-          isActive: (pathname) =>
-            pathname.startsWith('/admin/partners') || pathname.startsWith('/admin/branding'),
-        },
-        {
-          href: '/admin/users',
-          label: 'Team',
-          isActive: (pathname) => pathname.startsWith('/admin/users'),
-        },
-      ],
+      items: organisationItems,
     });
 
     sections.push({

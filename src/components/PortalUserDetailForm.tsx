@@ -22,8 +22,11 @@ const ROLES: PortalUserRole[] = ['staff', 'partner', 'school_admin', 'reviewer']
 
 export function PortalUserDetailForm({ user, schools, partners }: Props) {
   const router = useRouter();
+  const isSuperAdminAccount = user.role === 'super_admin';
   const [fullName, setFullName] = useState(user.fullName);
-  const [role, setRole] = useState<PortalUserRole>(user.role);
+  const [role, setRole] = useState<PortalUserRole>(
+    user.role === 'super_admin' ? 'staff' : user.role,
+  );
   const [schoolId, setSchoolId] = useState(user.schoolId ?? '');
   const [partnerId, setPartnerId] = useState(user.partnerId ?? '');
   const [message, setMessage] = useState<string | null>(null);
@@ -144,7 +147,14 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
           : ''}
       </p>
 
-      <form onSubmit={save}>
+      {isSuperAdminAccount ? (
+        <p className={styles.message}>
+          Super admin accounts are managed outside the Team page. Role changes, deactivation, and
+          MFA reset are not available here.
+        </p>
+      ) : (
+        <>
+          <form onSubmit={save}>
         <div className={styles.grid}>
           <label className={styles.label}>
             Full name
@@ -243,6 +253,8 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
           {error}
         </p>
       ) : null}
+        </>
+      )}
     </div>
   );
 }

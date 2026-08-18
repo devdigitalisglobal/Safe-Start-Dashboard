@@ -7,23 +7,13 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { createClient } from '@/lib/supabase/client';
-import { isPortalRole } from '@/lib/access';
+import { isCmsRole, isDashboardRole, isPortalRole } from '@/lib/access';
 import { getTokenAal, isPortalMfaRequired } from '@/lib/mfa';
 import styles from './LoginForm.module.css';
 
-
-
 type Props = {
-
   errorCode?: string | null;
-
 };
-
-
-
-const DASHBOARD_ROLES = ['staff', 'partner', 'school_admin'];
-
-const CMS_ROLES = ['staff', 'reviewer'];
 
 
 
@@ -169,9 +159,8 @@ export function LoginForm({ errorCode }: Props) {
 
 
 
-      const hasDashboard = DASHBOARD_ROLES.includes(role);
-
-      const hasCms = CMS_ROLES.includes(role);
+      const hasDashboard = isDashboardRole(role);
+      const hasCms = isCmsRole(role);
 
 
 
