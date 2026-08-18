@@ -160,6 +160,12 @@
   text-align: center;
 }
 
+.hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
 .error {
   color: var(--danger);
   font-size: 14px;

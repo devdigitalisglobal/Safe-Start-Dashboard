@@ -101,9 +101,16 @@ export function AccountSecurityPanel({ mfaRequired }: Props) {
             <span className={styles.badge}>
               {status?.mfaEnrolled ? 'Authenticator enrolled' : 'Not enrolled yet'}
             </span>
-            <Link href="/account/mfa" className={styles.link}>
-              Open MFA setup / verification →
-            </Link>
+            {status?.mfaEnrolled ? (
+              <p className={styles.panelBody}>
+                Your authenticator is active. Manage recovery codes in the section below, or sign
+                out and back in if you need to verify your device again.
+              </p>
+            ) : (
+              <Link href="/account/mfa" className={styles.link}>
+                Complete MFA setup →
+              </Link>
+            )}
           </>
         ) : null}
       </section>
@@ -114,12 +121,12 @@ export function AccountSecurityPanel({ mfaRequired }: Props) {
           <p className={styles.panelBody}>
             {status.unusedRecoveryCodes > 0
               ? `${status.unusedRecoveryCodes} unused recovery code${status.unusedRecoveryCodes === 1 ? '' : 's'} on file.`
-              : 'No unused recovery codes remain. Generate a new set below.'}
+              : 'You have no recovery codes saved yet. Generate a set and store them somewhere safe — each code works once if you lose your authenticator.'}
           </p>
 
           <form className={gateStyles.form} onSubmit={regenerateCodes}>
             <label className={gateStyles.label}>
-              Current 6-digit code
+              Current 6-digit code from your authenticator app
               <input
                 className={gateStyles.input}
                 inputMode="numeric"
@@ -129,14 +136,29 @@ export function AccountSecurityPanel({ mfaRequired }: Props) {
                 required
                 value={totpCode}
                 onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="000000"
               />
             </label>
+            {totpCode.length < 6 ? (
+              <p className={gateStyles.hint}>
+                Enter all 6 digits to enable the button below.
+              </p>
+            ) : null}
             <button
               type="submit"
               className={gateStyles.button}
               disabled={loading || totpCode.length < 6}
+              title={
+                totpCode.length < 6
+                  ? 'Enter your current 6-digit authenticator code first'
+                  : undefined
+              }
             >
-              {loading ? 'Generating…' : 'Generate new recovery codes'}
+              {loading
+                ? 'Generating…'
+                : status.unusedRecoveryCodes > 0
+                  ? 'Generate new recovery codes'
+                  : 'Generate recovery codes'}
             </button>
           </form>
 
