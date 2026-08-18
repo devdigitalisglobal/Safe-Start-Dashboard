@@ -5,7 +5,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { apiGetAdmin } from '@/lib/api';
 import { isStaffRole, requireCmsUser } from '@/lib/auth';
 import { parseModuleEditorTab } from '@/lib/moduleEditor';
-import type { AdminModuleDetail } from '@/lib/types/admin';
+import type { AdminModuleDetail, AdminModuleQuizResponse } from '@/lib/types/admin';
 import styles from '../page.module.css';
 
 type Props = {
@@ -22,7 +22,11 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
     typeof query.tab === 'string' ? query.tab : undefined
   );
   const { token, profile } = await requireCmsUser();
-  const module = await apiGetAdmin<AdminModuleDetail>(`modules/${id}`, token);
+
+  const [module, quiz] = await Promise.all([
+    apiGetAdmin<AdminModuleDetail>(`modules/${id}`, token),
+    apiGetAdmin<AdminModuleQuizResponse>(`modules/${id}/quiz`, token),
+  ]);
 
   const canWrite = isStaffRole(profile.role);
   const canReview = profile.role === 'reviewer';
@@ -49,8 +53,9 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
       <ModuleEditorTabs activeTab={activeTab} lessonId={initialLessonId} />
 
       <ModuleEditForm
-        key={`${module.id}-${module.updatedAt}`}
+        key={`${module.id}-${module.updatedAt}-${quiz.questions.length}`}
         module={module}
+        quizQuestions={quiz.questions}
         canWrite={canWrite}
         canReview={canReview}
         initialLessonId={initialLessonId}

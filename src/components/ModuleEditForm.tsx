@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import type { AdminModuleDetail } from '@/lib/types/admin';
-import { MediaPicker } from '@/components/MediaPicker';
 import { LessonReorderList } from '@/components/LessonReorderList';
-import { ModuleQuizPlaceholder } from '@/components/ModuleQuizPlaceholder';
+import { MediaPicker } from '@/components/MediaPicker';
+import { ModuleQuizEditor } from '@/components/ModuleQuizEditor';
+import type { AdminModuleDetail, AdminModuleQuizQuestion } from '@/lib/types/admin';
 import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditForm.module.css';
 
 type Props = {
   module: AdminModuleDetail;
+  quizQuestions: AdminModuleQuizQuestion[];
   canWrite: boolean;
   canReview: boolean;
   initialLessonId?: string;
@@ -27,6 +28,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function ModuleEditForm({
   module,
+  quizQuestions,
   canWrite,
   canReview,
   initialLessonId,
@@ -581,7 +583,13 @@ export function ModuleEditForm({
       </section>
       ) : null}
 
-      {activeTab === 'quiz' ? <ModuleQuizPlaceholder canWrite={canWrite} /> : null}
+      {activeTab === 'quiz' ? (
+        <ModuleQuizEditor
+          moduleId={module.id}
+          initialQuestions={quizQuestions}
+          canWrite={canWrite}
+        />
+      ) : null}
 
       {message ? (
         <p className={styles.message} role="status">
