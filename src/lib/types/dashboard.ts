@@ -145,3 +145,10 @@ export type UserProfile = {
 export type SchoolsResponse = {
   schools: SchoolOption[];
 };
+
+export type DashboardOverviewResponse = {
+  improvement: ImprovementResponse;
+  reach: ReachResponse;
+  engagement: EngagementResponse;
+  learning: LearningResponse;
+};

@@ -1,42 +1,33 @@
 import { Suspense } from 'react';
-import { EngagementSection } from '@/components/EngagementSection';
-import { ExportActions } from '@/components/ExportActions';
-import { FilterBar } from '@/components/FilterBar';
-import { HeadlineTiles } from '@/components/HeadlineTiles';
-import { ImprovementHero } from '@/components/ImprovementHero';
-import { LearningSection } from '@/components/LearningSection';
+import {
+  DashboardEngagementSection,
+  DashboardFiltersRow,
+  DashboardHeadlines,
+  DashboardImprovementSection,
+  DashboardLearningSection,
+  DashboardReachSection,
+} from '@/components/DashboardSections';
+import {
+  FilterBarSkeleton,
+  HeadlineTilesSkeleton,
+  SectionSkeleton,
+} from '@/components/DashboardOverviewSkeleton';
 import { PageHeader } from '@/components/PageHeader';
-import { ReachSection } from '@/components/ReachSection';
-import { apiFetch, apiGetDashboard } from '@/lib/api';
-import { requireDashboardUser } from '@/lib/auth';
 import { parseDashboardFilters } from '@/lib/filters';
-import type {
-  EngagementResponse,
-  ImprovementResponse,
-  LearningResponse,
-  ReachResponse,
-  SchoolsResponse,
-} from '@/lib/types/dashboard';
-import styles from './page.module.css';
+import type { DashboardFilters } from '@/lib/types/dashboard';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+function filtersKey(filters: DashboardFilters) {
+  return [filters.schoolId ?? '', filters.from ?? '', filters.to ?? ''].join('|');
+}
+
 export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
   const filters = parseDashboardFilters(params);
-  const { token, profile } = await requireDashboardUser();
-
-  const canPickSchool = profile.role === 'staff' || profile.role === 'partner';
-
-  const [improvement, reach, engagement, learning, schoolsResponse] = await Promise.all([
-    apiGetDashboard<ImprovementResponse>('improvement', token, filters).catch(() => null),
-    apiGetDashboard<ReachResponse>('reach', token, filters).catch(() => null),
-    apiGetDashboard<EngagementResponse>('engagement', token, filters).catch(() => null),
-    apiGetDashboard<LearningResponse>('learning', token, filters).catch(() => null),
-    apiFetch<SchoolsResponse>('/dashboard/schools', token).catch(() => ({ schools: [] })),
-  ]);
+  const key = filtersKey(filters);
 
   return (
     <>
@@ -45,24 +36,29 @@ export default async function DashboardPage({ searchParams }: Props) {
         description="Program reach, learner engagement, and knowledge improvement across your schools."
       />
 
-      <Suspense fallback={<div className={styles.filterFallback}>Loading filters…</div>}>
-        <FilterBar
-          schools={schoolsResponse.schools}
-          canPickSchool={canPickSchool}
-          lockedSchoolName={!canPickSchool ? profile.school?.name : null}
-        />
-        <ExportActions />
+      <Suspense fallback={<FilterBarSkeleton />}>
+        <DashboardFiltersRow />
       </Suspense>
 
-      <HeadlineTiles improvement={improvement} reach={reach} engagement={engagement} />
+      <Suspense key={`headlines-${key}`} fallback={<HeadlineTilesSkeleton />}>
+        <DashboardHeadlines filters={filters} />
+      </Suspense>
 
-      <ImprovementHero data={improvement} />
+      <Suspense key={`improvement-${key}`} fallback={<SectionSkeleton />}>
+        <DashboardImprovementSection filters={filters} />
+      </Suspense>
 
-      <ReachSection data={reach} />
+      <Suspense key={`reach-${key}`} fallback={<SectionSkeleton />}>
+        <DashboardReachSection filters={filters} />
+      </Suspense>
 
-      <EngagementSection data={engagement} />
+      <Suspense key={`engagement-${key}`} fallback={<SectionSkeleton />}>
+        <DashboardEngagementSection filters={filters} />
+      </Suspense>
 
-      <LearningSection data={learning} />
+      <Suspense key={`learning-${key}`} fallback={<SectionSkeleton />}>
+        <DashboardLearningSection filters={filters} />
+      </Suspense>
     </>
   );
 }

@@ -158,6 +158,7 @@ export function PortalChrome({ profile, children }: Props) {
                     <li key={item.href}>
                       <Link
                         href={item.href}
+                        prefetch={item.href === '/' ? false : undefined}
                         className={active ? styles.linkActive : styles.link}
                         aria-current={active ? 'page' : undefined}
                         onClick={closeMenu}

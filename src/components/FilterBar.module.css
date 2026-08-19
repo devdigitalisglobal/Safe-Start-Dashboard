@@ -46,6 +46,13 @@
   outline-offset: 1px;
 }
 
+.input:disabled,
+.apply:disabled,
+.clear:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .locked {
   padding: 10px 0;
   font-size: 14px;
@@ -71,7 +78,7 @@
   font-weight: 600;
 }
 
-.apply:hover {
+.apply:hover:not(:disabled) {
   background: var(--primary-dim);
 }
 
@@ -81,6 +88,20 @@
   color: var(--text-muted);
 }
 
-.clear:hover {
+.clear:hover:not(:disabled) {
   color: var(--text);
+}
+
+.status {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+  color: var(--primary);
+}
+
+.statusMuted {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
 }

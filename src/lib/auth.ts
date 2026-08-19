@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { ApiError, apiFetch } from '@/lib/api';
 import {
@@ -40,7 +41,7 @@ export function isAdminRole(role: string): role is StaffRole {
   return isStaffRole(role);
 }
 
-export async function getSessionToken() {
+export const getSessionToken = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -52,12 +53,13 @@ export async function getSessionToken() {
     data: { session },
   } = await supabase.auth.getSession();
   return session?.access_token ?? null;
-}
+});
 
-async function requireAuthenticatedProfile(): Promise<{
+/** One Supabase + /users/me round trip per request (shared by layout and page). */
+const requireAuthenticatedProfile = cache(async (): Promise<{
   token: string;
   profile: UserProfile;
-}> {
+}> => {
   const token = await getSessionToken();
   if (!token) redirect('/login');
 
@@ -75,7 +77,7 @@ async function requireAuthenticatedProfile(): Promise<{
   }
 
   return { token, profile };
-}
+});
 
 function enforcePortalMfa(token: string, role: string) {
   if (isPortalMfaRequired() && isPortalRole(role) && !hasMfaSatisfied(token)) {
