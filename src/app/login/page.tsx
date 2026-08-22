@@ -8,7 +8,7 @@ import type { UserProfile } from '@/lib/types/dashboard';
 import styles from './page.module.css';
 
 type Props = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; reset?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: Props) {
@@ -38,7 +38,10 @@ export default async function LoginPage({ searchParams }: Props) {
         <p className={styles.subtitle}>
           Sign in to view program reports or manage course content.
         </p>
-        <LoginForm errorCode={params.error ?? null} />
+        <LoginForm
+          errorCode={params.error ?? null}
+          resetSuccess={params.reset === 'success'}
+        />
       </div>
     </main>
   );

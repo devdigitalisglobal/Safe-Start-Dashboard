@@ -12,6 +12,7 @@ function requirePublicEnv(value: string | undefined, name: string): string {
 // when referenced literally, not via process.env[variableName].
 export const env = {
   apiUrl: requirePublicEnv(process.env.NEXT_PUBLIC_API_URL, 'NEXT_PUBLIC_API_URL'),
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, '') ?? '',
   supabaseUrl: requirePublicEnv(process.env.NEXT_PUBLIC_SUPABASE_URL, 'NEXT_PUBLIC_SUPABASE_URL'),
   supabaseAnonKey: requirePublicEnv(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

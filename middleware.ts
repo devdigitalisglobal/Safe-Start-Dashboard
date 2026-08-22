@@ -8,13 +8,14 @@ import { createSupabaseCookieMethods } from '@/lib/supabase/cookies';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/login')) {
+  if (pathname.startsWith('/login') || pathname.startsWith('/forgot-password')) {
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
       request.headers.get('x-real-ip') ??
       'unknown';
-    if (isRateLimited(`login:${ip}`, 5, 60_000)) {
-      return new NextResponse('Too many login attempts. Try again shortly.', { status: 429 });
+    const key = pathname.startsWith('/forgot-password') ? `forgot:${ip}` : `login:${ip}`;
+    if (isRateLimited(key, 5, 60_000)) {
+      return new NextResponse('Too many attempts. Try again shortly.', { status: 429 });
     }
   }
 
@@ -39,7 +40,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isPublic = pathname.startsWith('/login') || pathname.startsWith('/auth');
+  const isPublic =
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/auth') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/set-password');
 
   if (!user && !isPublic) {
     const loginUrl = request.nextUrl.clone();
