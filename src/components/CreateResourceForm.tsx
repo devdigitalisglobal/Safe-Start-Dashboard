@@ -3,18 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import {
+  CMS_RESOURCE_CATEGORIES,
+  RESOURCE_BODY_HINT,
+  type CmsResourceCategory,
+} from '@/lib/resourceCategories';
 import styles from './CreateResourceForm.module.css';
-
-const CATEGORIES = [
-  { value: 'checklists', label: 'Checklists' },
-  { value: 'resources', label: 'Resources' },
-  { value: 'helpful_links', label: 'Helpful Links' },
-  { value: 'support', label: 'Support' },
-] as const;
 
 export function CreateResourceForm() {
   const router = useRouter();
-  const [category, setCategory] = useState<(typeof CATEGORIES)[number]['value']>('checklists');
+  const [category, setCategory] = useState<CmsResourceCategory>('checklists');
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [body, setBody] = useState('');
@@ -89,9 +87,9 @@ export function CreateResourceForm() {
         <select
           className={styles.input}
           value={category}
-          onChange={(e) => setCategory(e.target.value as (typeof CATEGORIES)[number]['value'])}
+          onChange={(e) => setCategory(e.target.value as CmsResourceCategory)}
         >
-          {CATEGORIES.map((entry) => (
+          {CMS_RESOURCE_CATEGORIES.map((entry) => (
             <option key={entry.value} value={entry.value}>
               {entry.label}
             </option>
@@ -110,12 +108,12 @@ export function CreateResourceForm() {
       </label>
 
       <label className={styles.label}>
-        Body (optional — for in-app pages)
-        <textarea className={styles.textarea} rows={5} value={body} onChange={(e) => setBody(e.target.value)} />
+        Body (optional — {RESOURCE_BODY_HINT})
+        <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
 
       <label className={styles.label}>
-        External URL (optional — for links)
+        External URL (optional — for helpful links)
         <input className={styles.input} value={url} onChange={(e) => setUrl(e.target.value)} />
       </label>
 

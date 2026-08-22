@@ -53,3 +53,10 @@ export function contentAssessmentsCrumbs(): CmsCrumb[] {
     { label: 'Assessments', href: '/admin/assessments' },
   ];
 }
+
+export function contentResourcesCrumbs(): CmsCrumb[] {
+  return [
+    { label: 'Content', href: '/admin/modules' },
+    { label: 'Learner resources', href: '/admin/resources' },
+  ];
+}
