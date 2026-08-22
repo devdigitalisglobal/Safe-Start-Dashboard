@@ -112,8 +112,8 @@ export function InvitePortalUserForm({ schools, partners }: Props) {
           </FormMessage>
         ) : (
           <FormMessage>
-            An auth account already existed for this email — profile updated. Reset the password in
-            Supabase if they cannot sign in.
+            An auth account already existed for this email — profile updated. They can use Forgot
+            password on the login page if they cannot sign in.
           </FormMessage>
         )}
         <FormMessage>They must enroll MFA on first login.</FormMessage>

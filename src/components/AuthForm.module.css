@@ -105,3 +105,12 @@
   font-size: 14px;
   line-height: 1.45;
 }
+
+.inlineLink {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}

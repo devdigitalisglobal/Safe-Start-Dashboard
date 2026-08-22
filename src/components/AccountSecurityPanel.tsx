@@ -4,15 +4,17 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { fetchMfaStatus, generateRecoveryCodes } from '@/lib/mfaApi';
+import { ChangePasswordForm } from '@/components/ChangePasswordForm';
 import { RecoveryCodesPanel } from '@/components/RecoveryCodesPanel';
 import styles from '@/app/account/account.module.css';
 import gateStyles from './MfaGate.module.css';
 
 type Props = {
+  email: string;
   mfaRequired: boolean;
 };
 
-export function AccountSecurityPanel({ mfaRequired }: Props) {
+export function AccountSecurityPanel({ email, mfaRequired }: Props) {
   const [status, setStatus] = useState<{ mfaEnrolled: boolean; unusedRecoveryCodes: number } | null>(
     null
   );
@@ -89,6 +91,18 @@ export function AccountSecurityPanel({ mfaRequired }: Props) {
 
   return (
     <>
+      <section className={styles.panel}>
+        <h2 className={styles.panelTitle}>Password</h2>
+        <p className={styles.panelBody}>
+          Update your Staff Portal password. You will sign in again on all devices after saving.
+        </p>
+        {status === null ? (
+          <p className={styles.panelBody}>Loading…</p>
+        ) : (
+          <ChangePasswordForm email={email} mfaEnrolled={status.mfaEnrolled} />
+        )}
+      </section>
+
       <section className={styles.panel}>
         <h2 className={styles.panelTitle}>Authenticator app (MFA)</h2>
         <p className={styles.panelBody}>

@@ -26,7 +26,7 @@ export default async function AccountSecurityPage() {
       </header>
 
       <div className={styles.stack}>
-        <AccountSecurityPanel mfaRequired={mfaRequired} />
+        <AccountSecurityPanel email={profile.email} mfaRequired={mfaRequired} />
       </div>
     </div>
   );
