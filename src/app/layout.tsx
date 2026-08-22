@@ -4,6 +4,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Safe Start — Staff Portal',
   description: 'Reporting and content management for Safe Start for Young Drivers.',
+  icons: {
+    icon: [{ url: '/icon.png', type: 'image/png' }],
+    apple: [{ url: '/apple-icon.png', type: 'image/png' }],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<'/'>) {

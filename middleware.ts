@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { env } from '@/lib/env';
 import { isRateLimited } from '@/lib/rateLimit';
+import { AUTH_COOKIE_MAX_AGE_SEC } from '@/lib/supabase/cookieOptions';
+import { createSupabaseCookieMethods } from '@/lib/supabase/cookies';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -19,24 +21,24 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(env.supabaseUrl, env.supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
+    cookieOptions: {
+      maxAge: AUTH_COOKIE_MAX_AGE_SEC,
+      path: '/',
+      sameSite: 'lax',
+    },
+    cookies: createSupabaseCookieMethods(
+      () => request.cookies.getAll(),
+      (cookiesToSet) => {
         cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
         cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, {
-            ...options,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-          })
+          response.cookies.set(name, value, options)
         );
-      },
-    },
+      }
+    ),
   });
 
+  // Refreshes expired access tokens and rewrites persistent auth cookies.
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -54,6 +56,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|icon.png|apple-icon.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };
