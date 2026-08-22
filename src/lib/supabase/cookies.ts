@@ -7,7 +7,7 @@ type CookieToSet = {
   options?: Parameters<typeof authCookieOptions>[0];
 };
 
-/** Shared Supabase SSR cookie adapter — persists auth across browser restarts. */
+/** Shared Supabase SSR cookie adapter — session cookies only (logout on browser close). */
 export function createSupabaseCookieMethods(
   getAll: CookieMethodsServer['getAll'],
   setAllImpl: (cookies: CookieToSet[]) => void

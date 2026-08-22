@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { env } from '@/lib/env';
 import { isRateLimited } from '@/lib/rateLimit';
-import { AUTH_COOKIE_MAX_AGE_SEC } from '@/lib/supabase/cookieOptions';
+import { authCookieOptions } from '@/lib/supabase/cookieOptions';
 import { createSupabaseCookieMethods } from '@/lib/supabase/cookies';
 
 export async function middleware(request: NextRequest) {
@@ -21,11 +21,7 @@ export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(env.supabaseUrl, env.supabaseAnonKey, {
-    cookieOptions: {
-      maxAge: AUTH_COOKIE_MAX_AGE_SEC,
-      path: '/',
-      sameSite: 'lax',
-    },
+    cookieOptions: authCookieOptions(),
     cookies: createSupabaseCookieMethods(
       () => request.cookies.getAll(),
       (cookiesToSet) => {
@@ -38,7 +34,7 @@ export async function middleware(request: NextRequest) {
     ),
   });
 
-  // Refreshes expired access tokens and rewrites persistent auth cookies.
+  // Refreshes expired access tokens while the browser session is open.
   const {
     data: { user },
   } = await supabase.auth.getUser();
