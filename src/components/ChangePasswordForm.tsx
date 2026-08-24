@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { changePassword } from '@/lib/auth/passwordReset';
-import { createClient } from '@/lib/supabase/client';
+import { signOutPortal } from '@/lib/portalSignOut';
 import { FormError } from '@/components/FormFeedback';
 import authStyles from './AuthForm.module.css';
 import gateStyles from './MfaGate.module.css';
@@ -57,8 +57,7 @@ export function ChangePasswordForm({ email, mfaEnrolled }: Props) {
         totpCode: mfaEnrolled ? totpCode : undefined,
       });
 
-      const supabase = createClient();
-      await supabase.auth.signOut({ scope: 'global' });
+      await signOutPortal();
       router.replace('/login?reset=success');
       router.refresh();
     } catch (err) {

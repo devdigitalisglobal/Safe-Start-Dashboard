@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { isCmsRole, isDashboardRole } from '@/lib/access';
 import { updatePassword } from '@/lib/auth/passwordReset';
 import { getTokenAal, isPortalMfaRequired } from '@/lib/mfa';
+import { signOutPortal } from '@/lib/portalSignOut';
 import { createClient } from '@/lib/supabase/client';
 import { FormError } from '@/components/FormFeedback';
 import styles from './AuthForm.module.css';
@@ -53,7 +54,7 @@ export function SetPasswordForm() {
       });
 
       if (!profileRes.ok) {
-        await supabase.auth.signOut();
+        await signOutPortal();
         router.replace('/login?error=reset_link_invalid');
         return;
       }
@@ -62,7 +63,7 @@ export function SetPasswordForm() {
       const role = profile.role ?? '';
 
       if (!isDashboardRole(role) && !isCmsRole(role)) {
-        await supabase.auth.signOut();
+        await signOutPortal();
         router.replace('/login?error=learner_reset');
         return;
       }
@@ -77,7 +78,7 @@ export function SetPasswordForm() {
         return;
       }
 
-      await supabase.auth.signOut();
+      await signOutPortal();
       router.replace('/login?reset=success');
       router.refresh();
     } catch (err) {

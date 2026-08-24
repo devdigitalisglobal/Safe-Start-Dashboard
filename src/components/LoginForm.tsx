@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { beginPortalSession } from '@/lib/sessionPolicy';
+import { signOutPortal } from '@/lib/portalSignOut';
 import { createClient } from '@/lib/supabase/client';
 import { isCmsRole, isDashboardRole, isPortalRole } from '@/lib/access';
 import { getTokenAal, isPortalMfaRequired } from '@/lib/mfa';
@@ -11,10 +13,14 @@ import authStyles from './AuthForm.module.css';
 
 type Props = {
   errorCode?: string | null;
+  reason?: string | null;
   resetSuccess?: boolean;
 };
 
-function initialError(errorCode?: string | null): string | null {
+function initialError(errorCode?: string | null, reason?: string | null): string | null {
+  if (reason === 'session_expired') {
+    return 'Your session ended due to inactivity or closing the browser. Sign in again to continue.';
+  }
   if (errorCode === 'access_denied') {
     return 'Your account does not have dashboard or CMS access.';
   }
@@ -30,11 +36,11 @@ function initialError(errorCode?: string | null): string | null {
   return null;
 }
 
-export function LoginForm({ errorCode, resetSuccess = false }: Props) {
+export function LoginForm({ errorCode, reason, resetSuccess = false }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(() => initialError(errorCode));
+  const [error, setError] = useState<string | null>(() => initialError(errorCode, reason));
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -82,7 +88,7 @@ export function LoginForm({ errorCode, resetSuccess = false }: Props) {
 
       if (!profileRes.ok) {
         if (profileRes.status === 403 || profileRes.status === 401) {
-          await supabase.auth.signOut();
+          await signOutPortal();
           setError('Your account does not have access.');
           setLoading(false);
           return;
@@ -96,7 +102,7 @@ export function LoginForm({ errorCode, resetSuccess = false }: Props) {
       const hasCms = isCmsRole(role);
 
       if (!hasDashboard && !hasCms) {
-        await supabase.auth.signOut();
+        await signOutPortal();
         setError('Your account does not have dashboard or CMS access.');
         setLoading(false);
         return;
@@ -112,6 +118,7 @@ export function LoginForm({ errorCode, resetSuccess = false }: Props) {
         return;
       }
 
+      beginPortalSession();
       router.push(hasDashboard ? '/' : '/admin/modules');
       router.refresh();
     } catch {

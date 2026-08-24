@@ -1,5 +1,6 @@
 import type { UserProfile } from '@/lib/types/dashboard';
 import { PortalChrome } from './PortalChrome';
+import { PortalSessionGuard } from './PortalSessionGuard';
 import styles from './PortalShell.module.css';
 
 type Props = {
@@ -9,8 +10,10 @@ type Props = {
 
 export function PortalShell({ profile, children }: Props) {
   return (
-    <div className={styles.root}>
-      <PortalChrome profile={profile}>{children}</PortalChrome>
-    </div>
+    <PortalSessionGuard>
+      <div className={styles.root}>
+        <PortalChrome profile={profile}>{children}</PortalChrome>
+      </div>
+    </PortalSessionGuard>
   );
 }

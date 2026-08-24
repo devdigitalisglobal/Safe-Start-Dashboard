@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { isDashboardRole } from '@/lib/access';
 import { generateRecoveryCodes, redeemRecoveryCode } from '@/lib/mfaApi';
 import { renderQrToCanvas, resolveTotpUri } from '@/lib/mfaQr';
+import { signOutPortal } from '@/lib/portalSignOut';
+import { beginPortalSession } from '@/lib/sessionPolicy';
 import { RecoveryCodesPanel } from '@/components/RecoveryCodesPanel';
 import styles from './MfaGate.module.css';
 
@@ -123,6 +125,7 @@ export function MfaGate({ role, email }: Props) {
   }
 
   function redirectAfterSuccess() {
+    beginPortalSession();
     router.push(isDashboardRole(role) ? '/' : '/admin/modules');
     router.refresh();
   }
@@ -206,8 +209,7 @@ export function MfaGate({ role, email }: Props) {
   }
 
   async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await signOutPortal();
     router.push('/login');
     router.refresh();
   }
