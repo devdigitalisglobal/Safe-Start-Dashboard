@@ -8,13 +8,20 @@ import { createSupabaseCookieMethods } from '@/lib/supabase/cookies';
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith('/login') || pathname.startsWith('/forgot-password')) {
+  const isAuthPage =
+    pathname.startsWith('/login') || pathname.startsWith('/forgot-password');
+  const isNextDataPrefetch =
+    request.nextUrl.searchParams.has('_rsc') ||
+    request.headers.get('RSC') === '1' ||
+    request.headers.get('Next-Router-Prefetch') === '1';
+
+  if (isAuthPage && !isNextDataPrefetch) {
     const ip =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
       request.headers.get('x-real-ip') ??
       'unknown';
     const key = pathname.startsWith('/forgot-password') ? `forgot:${ip}` : `login:${ip}`;
-    if (isRateLimited(key, 5, 60_000)) {
+    if (isRateLimited(key, 20, 60_000)) {
       return new NextResponse('Too many attempts. Try again shortly.', { status: 429 });
     }
   }

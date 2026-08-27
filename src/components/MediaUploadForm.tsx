@@ -42,8 +42,9 @@ export function MediaUploadForm() {
       if (!apiUrl) throw new Error('API URL is not configured');
 
       const formData = new FormData();
-      formData.append('file', file);
+      // altText must come before file — @fastify/multipart only attaches prior fields to data.fields
       formData.append('altText', altText.trim());
+      formData.append('file', file);
 
       const response = await fetch(`${apiUrl}/admin/media`, {
         method: 'POST',
