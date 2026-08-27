@@ -20,10 +20,9 @@ export function MediaUploadForm() {
 
     const file = fileRef.current?.files?.[0];
     if (!file) {
-      setError('Choose an image to upload.');
+      setError('Choose a file to upload.');
       return;
     }
-
     if (!altText.trim()) {
       setError('Alt text is required for accessibility.');
       return;
@@ -65,8 +64,7 @@ export function MediaUploadForm() {
 
       setAltText('');
       if (fileRef.current) fileRef.current.value = '';
-      setMessage('Image uploaded to the media library.');
-      router.refresh();
+      setMessage('File uploaded to the media library.');      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {
@@ -76,17 +74,21 @@ export function MediaUploadForm() {
 
   return (
     <form className={styles.form} onSubmit={handleSubmit}>
-      <h2 className={styles.title}>Upload image</h2>
+      <h2 className={styles.title}>Upload file</h2>
       <p className={styles.help}>
-        JPEG, PNG, WebP, or GIF up to 5 MB. For module covers use WebP at roughly 1200×675 px
-        (16:9) — smaller files load faster on phones. Alt text is required — describe what the
-        image shows for screen reader users.
+        Images (JPEG, PNG, WebP, GIF) or PDF up to 5 MB. For module covers use WebP at roughly
+        1200 px wide. Alt text is required — describe what the file shows for screen reader users.
       </p>
 
       <label className={styles.label}>
-        Image file
-        <input ref={fileRef} className={styles.file} type="file" accept="image/*" required />
-      </label>
+        File
+        <input
+          ref={fileRef}
+          className={styles.file}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,application/pdf"
+          required
+        />      </label>
 
       <label className={styles.label}>
         Alt text (required)

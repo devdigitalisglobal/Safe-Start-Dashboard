@@ -3,13 +3,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { MediaPicker } from '@/components/MediaPicker';
 import {
   CMS_RESOURCE_CATEGORIES,
   RESOURCE_BODY_HINT,
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import styles from './CreateResourceForm.module.css';
-
 export function CreateResourceForm() {
   const router = useRouter();
   const [category, setCategory] = useState<CmsResourceCategory>('checklists');
@@ -17,8 +17,8 @@ export function CreateResourceForm() {
   const [summary, setSummary] = useState('');
   const [body, setBody] = useState('');
   const [url, setUrl] = useState('');
-  const [status, setStatus] = useState<'draft' | 'published'>('draft');
-  const [loading, setLoading] = useState(false);
+  const [selectedMimeType, setSelectedMimeType] = useState('');
+  const [status, setStatus] = useState<'draft' | 'published'>('draft');  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,8 +28,19 @@ export function CreateResourceForm() {
     setError(null);
     setMessage(null);
 
-    try {
-      const supabase = createClient();
+    if (category === 'resources' && !url.trim()) {
+      setError('Choose a guide file from the media library.');
+      setLoading(false);
+      return;
+    }
+
+    if (category === 'helpful_links' && !url.trim()) {
+      setError('External URL is required for helpful links.');
+      setLoading(false);
+      return;
+    }
+
+    try {      const supabase = createClient();
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -69,8 +80,8 @@ export function CreateResourceForm() {
       setSummary('');
       setBody('');
       setUrl('');
-      setMessage('Resource item created.');
-      router.refresh();
+      setSelectedMimeType('');
+      setMessage('Resource item created.');      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Create failed');
     } finally {
@@ -102,21 +113,46 @@ export function CreateResourceForm() {
         <input className={styles.input} value={title} onChange={(e) => setTitle(e.target.value)} required />
       </label>
 
-      <label className={styles.label}>
-        Summary (optional)
-        <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
-      </label>
+      {category === 'resources' ? (
+        <>
+          <MediaPicker
+            label="Guide file — pick a JPG or PDF uploaded to the media library"
+            selectedUrl={url}
+            selectedAlt={title || 'Guide file'}
+            selectedMimeType={selectedMimeType}
+            allowDocuments
+            onSelect={(selectedUrl, _alt, mimeType) => {
+              setUrl(selectedUrl);
+              setSelectedMimeType(mimeType ?? '');
+            }}
+          />
+          <p className={styles.hint}>
+            Upload the file on Library → Media first, then choose it here. Leave summary empty so
+            learners tap the guide to open the file.
+          </p>
+        </>
+      ) : null}
 
-      <label className={styles.label}>
-        Body (optional — {RESOURCE_BODY_HINT})
-        <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
-      </label>
+      {category !== 'resources' ? (
+        <label className={styles.label}>
+          Summary (optional)
+          <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
+        </label>
+      ) : null}
 
-      <label className={styles.label}>
-        External URL (optional — for helpful links)
-        <input className={styles.input} value={url} onChange={(e) => setUrl(e.target.value)} />
-      </label>
+      {category !== 'helpful_links' && category !== 'resources' ? (
+        <label className={styles.label}>
+          Body (optional — {RESOURCE_BODY_HINT})
+          <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+        </label>
+      ) : null}
 
+      {category === 'helpful_links' ? (
+        <label className={styles.label}>
+          External URL
+          <input className={styles.input} value={url} onChange={(e) => setUrl(e.target.value)} required />
+        </label>
+      ) : null}
       <label className={styles.label}>
         Status
         <select

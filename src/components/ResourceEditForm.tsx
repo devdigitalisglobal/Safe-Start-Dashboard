@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { MediaPicker } from '@/components/MediaPicker';
 import {
   CMS_RESOURCE_CATEGORIES,
   RESOURCE_BODY_HINT,
@@ -28,8 +29,8 @@ export function ResourceEditForm({ item }: Props) {
   const [summary, setSummary] = useState(item.summary ?? '');
   const [body, setBody] = useState(item.body ?? '');
   const [url, setUrl] = useState(item.url ?? '');
-  const [orderIndex, setOrderIndex] = useState(String(item.orderIndex));
-  const [status, setStatus] = useState<'draft' | 'published'>(
+  const [selectedMimeType, setSelectedMimeType] = useState('');
+  const [orderIndex, setOrderIndex] = useState(String(item.orderIndex));  const [status, setStatus] = useState<'draft' | 'published'>(
     item.status === 'published' ? 'published' : 'draft'
   );
   const [loading, setLoading] = useState(false);
@@ -101,15 +102,7 @@ export function ResourceEditForm({ item }: Props) {
       <form className={formStyles.form} onSubmit={handleSave}>
         <h2 className={formStyles.title}>Edit resource</h2>
 
-        {item.category === 'resources' ? (
-          <p className={editStyles.readOnlyNote}>
-            This item uses the legacy Guides category, which is hidden in the learner app. Move it
-            to Checklists, Helpful Links, or Support, or delete it.
-          </p>
-        ) : null}
-
-        <label className={formStyles.label}>
-          Section
+        <label className={formStyles.label}>          Section
           <select
             className={formStyles.input}
             value={category}
@@ -133,33 +126,57 @@ export function ResourceEditForm({ item }: Props) {
           />
         </label>
 
-        <label className={formStyles.label}>
-          Summary (optional — checklist intro shown in the app)
-          <input
-            className={formStyles.input}
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-          />
-        </label>
+        {category === 'resources' ? (
+          <>
+            <MediaPicker
+              label="Guide file — pick a JPG or PDF from the media library"
+              selectedUrl={url}
+              selectedAlt={title || 'Guide file'}
+              selectedMimeType={selectedMimeType}
+              allowDocuments
+              onSelect={(selectedUrl, _alt, mimeType) => {
+                setUrl(selectedUrl);
+                setSelectedMimeType(mimeType ?? '');
+              }}
+            />
+            <p className={formStyles.hint}>
+              Leave summary empty so learners tap the guide to open the file directly.
+            </p>
+          </>
+        ) : null}
+
+        {category !== 'resources' ? (
+          <label className={formStyles.label}>
+            Summary (optional — checklist intro shown in the app)
+            <input
+              className={formStyles.input}
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+            />
+          </label>
+        ) : null}
+
+        {category !== 'helpful_links' && category !== 'resources' ? (
+          <label className={formStyles.label}>
+            Body (optional — {RESOURCE_BODY_HINT})
+            <textarea
+              className={formStyles.textarea}
+              rows={16}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+            />
+          </label>
+        ) : null}
+
+        {category === 'helpful_links' ? (
+          <label className={formStyles.label}>
+            External URL
+            <input className={formStyles.input} value={url} onChange={(e) => setUrl(e.target.value)} />
+          </label>
+        ) : null}
 
         <label className={formStyles.label}>
-          Body (optional — {RESOURCE_BODY_HINT})
-          <textarea
-            className={formStyles.textarea}
-            rows={16}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
-        </label>
-
-        <label className={formStyles.label}>
-          External URL (optional — for helpful links)
-          <input className={formStyles.input} value={url} onChange={(e) => setUrl(e.target.value)} />
-        </label>
-
-        <label className={formStyles.label}>
-          Order
-          <input
+          Order          <input
             className={formStyles.input}
             type="number"
             min={1}

@@ -9,18 +9,33 @@ type Props = {
   label: string;
   selectedUrl: string;
   selectedAlt: string;
-  onSelect: (url: string, alt: string) => void;
+  selectedMimeType?: string;
+  onSelect: (url: string, alt: string, mimeType?: string) => void;
   disabled?: boolean;
+  /** When true, PDFs from the library can be selected (for Guides). */
+  allowDocuments?: boolean;
 };
 
-export function MediaPicker({ label, selectedUrl, selectedAlt, onSelect, disabled }: Props) {
+function isPdf(mimeType: string) {
+  return mimeType === 'application/pdf';
+}
+
+export function MediaPicker({
+  label,
+  selectedUrl,
+  selectedAlt,
+  selectedMimeType,
+  onSelect,
+  disabled,
+  allowDocuments = false,
+}: Props) {
   const [open, setOpen] = useState(false);
   const [assets, setAssets] = useState<AdminMediaAsset[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!open || assets.length > 0) return;
+    if (!open) return;
 
     async function load() {
       setLoading(true);
@@ -52,7 +67,13 @@ export function MediaPicker({ label, selectedUrl, selectedAlt, onSelect, disable
     }
 
     void load();
-  }, [open, assets.length]);
+  }, [open]);
+
+  const visibleAssets = allowDocuments
+    ? assets
+    : assets.filter((asset) => !isPdf(asset.mimeType));
+
+  const selectedIsPdf = selectedMimeType ? isPdf(selectedMimeType) : selectedUrl.toLowerCase().endsWith('.pdf');
 
   return (
     <div className={styles.wrap}>
@@ -60,13 +81,19 @@ export function MediaPicker({ label, selectedUrl, selectedAlt, onSelect, disable
 
       {selectedUrl ? (
         <div className={styles.selected}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={selectedUrl} alt={selectedAlt || 'Selected image'} className={styles.thumb} />
+          {selectedIsPdf ? (
+            <div className={styles.pdfThumb} aria-hidden>
+              PDF
+            </div>
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img src={selectedUrl} alt={selectedAlt || 'Selected file'} className={styles.thumb} />
+          )}
           <div>
             <p className={styles.altPreview}>{selectedAlt || 'No alt text set'}</p>
             {!disabled ? (
               <button type="button" className={styles.linkButton} onClick={() => setOpen(true)}>
-                Change image
+                Change file
               </button>
             ) : null}
           </div>
@@ -76,7 +103,7 @@ export function MediaPicker({ label, selectedUrl, selectedAlt, onSelect, disable
           Choose from media library
         </button>
       ) : (
-        <p className={styles.empty}>No image selected</p>
+        <p className={styles.empty}>No file selected</p>
       )}
 
       {open ? (
@@ -94,32 +121,38 @@ export function MediaPicker({ label, selectedUrl, selectedAlt, onSelect, disable
               </button>
             </div>
 
-            {loading ? <p className={styles.status}>Loading images…</p> : null}
+            {loading ? <p className={styles.status}>Loading files…</p> : null}
             {error ? (
               <p className={styles.error} role="alert">
                 {error}
               </p>
             ) : null}
 
-            {!loading && assets.length === 0 ? (
+            {!loading && visibleAssets.length === 0 ? (
               <p className={styles.status}>
-                No images yet. Upload some on the Media library page first.
+                No files yet. Upload on the Media library page first.
               </p>
             ) : null}
 
             <div className={styles.grid}>
-              {assets.map((asset) => (
+              {visibleAssets.map((asset) => (
                 <button
                   key={asset.id}
                   type="button"
                   className={styles.assetButton}
                   onClick={() => {
-                    onSelect(asset.publicUrl, asset.altText);
+                    onSelect(asset.publicUrl, asset.altText, asset.mimeType);
                     setOpen(false);
                   }}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={asset.publicUrl} alt={asset.altText} className={styles.assetImage} />
+                  {isPdf(asset.mimeType) ? (
+                    <div className={styles.pdfTile} aria-hidden>
+                      PDF
+                    </div>
+                  ) : (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img src={asset.publicUrl} alt={asset.altText} className={styles.assetImage} />
+                  )}
                   <span className={styles.assetAlt}>{asset.altText}</span>
                 </button>
               ))}

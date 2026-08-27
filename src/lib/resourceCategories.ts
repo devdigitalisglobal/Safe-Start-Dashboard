@@ -16,4 +16,4 @@ export const CMS_RESOURCE_CATEGORY_LABELS: Record<CmsResourceCategory, string> =
 };
 
 export const RESOURCE_BODY_HINT =
-  'Checklists: ## Section heading, - tickable item, >> callout. Guides: set URL to a JPG/PDF from the media library, or add body text. Helpful links: leave body empty and set URL.';
+  'Checklists: ## heading, - item, >> callout. Guides: choose a file from the media library. Helpful links: set an external URL.';
