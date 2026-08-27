@@ -7,7 +7,6 @@ import { requireStaffUser } from '@/lib/auth';
 import { contentResourcesCrumbs } from '@/lib/cmsBreadcrumbs';
 import {
   CMS_RESOURCE_CATEGORY_LABELS,
-  LEGACY_RESOURCE_CATEGORY,
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import type { AdminResourcesResponse } from '@/lib/types/admin';
@@ -23,13 +22,11 @@ export default async function AdminResourcesPage() {
     return acc;
   }, {});
 
-  const legacyItems = grouped[LEGACY_RESOURCE_CATEGORY] ?? [];
-
   return (
     <>
       <PageHeader
         title="Learner resources"
-        description="Manage checklists, helpful links, and support content shown in the mobile app Resources tab."
+        description="Manage checklists, guides, helpful links, and support content shown in the mobile app Resources tab."
         breadcrumbs={contentResourcesCrumbs()}
       />
 
@@ -87,51 +84,6 @@ export default async function AdminResourcesPage() {
           </section>
         );
       })}
-
-      {legacyItems.length > 0 ? (
-        <section>
-          <h2 className={styles.subheading}>Legacy guides (hidden in app)</h2>
-          <p className={styles.notice}>
-            These items use the old Guides category. Edit to move them or delete them.
-          </p>
-          <div className={styles.tableWrap}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Status</th>
-                  <th>Order</th>
-                  <th>Updated</th>
-                  <th />
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {legacyItems.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.title}</td>
-                    <td>{item.status}</td>
-                    <td>{item.orderIndex}</td>
-                    <td>{new Date(item.updatedAt).toLocaleDateString('en-AU')}</td>
-                    <td>
-                      <ResourceDeleteButton
-                        resourceId={item.id}
-                        resourceTitle={item.title}
-                        compact
-                      />
-                    </td>
-                    <td>
-                      <Link className={styles.link} href={`/admin/resources/${item.id}`}>
-                        Edit
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      ) : null}
     </>
   );
 }
