@@ -78,8 +78,9 @@ export function MediaUploadForm() {
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.title}>Upload image</h2>
       <p className={styles.help}>
-        JPEG, PNG, WebP, or GIF up to 5 MB. Alt text is required — describe what the image shows
-        for screen reader users.
+        JPEG, PNG, WebP, or GIF up to 5 MB. For module covers use WebP at roughly 1200×675 px
+        (16:9) — smaller files load faster on phones. Alt text is required — describe what the
+        image shows for screen reader users.
       </p>
 
       <label className={styles.label}>
