@@ -7,7 +7,7 @@ import { LessonReorderList } from '@/components/LessonReorderList';
 import { MediaPicker } from '@/components/MediaPicker';
 import { ModuleQuizEditor } from '@/components/ModuleQuizEditor';
 import { RichTextField } from '@/components/RichTextField';
-import { MobilePreview } from '@/components/MobilePreview';
+import { OutcomesEditor } from '@/components/OutcomesEditor';
 import type { AdminModuleDetail, AdminModuleQuizQuestion } from '@/lib/types/admin';
 import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditForm.module.css';
@@ -409,17 +409,8 @@ export function ModuleEditForm({
           }}
         />
         <div className={styles.label}>
-          Outcomes (one per line, use **bold** for emphasis)
-          <textarea
-            className={styles.textarea}
-            rows={5}
-            value={outcomes}
-            onChange={(e) => setOutcomes(e.target.value)}
-            readOnly={readOnly}
-          />
-          {!readOnly ? (
-            <MobilePreview markdown={outcomes} variant="outcomes" label="Outcomes preview" />
-          ) : null}
+          Outcomes
+          <OutcomesEditor value={outcomes} onChange={setOutcomes} readOnly={readOnly} />
         </div>
         {canWrite ? (
           <button type="button" className={styles.primary} disabled={loading} onClick={saveModule}>

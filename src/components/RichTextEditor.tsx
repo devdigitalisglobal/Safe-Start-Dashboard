@@ -17,6 +17,8 @@ type Props = {
   minHeight?: number;
   /** inline = bold/italic/link only (for short fields like subtitles). */
   toolbar?: 'full' | 'inline';
+  /** Keep content on one line (for outcome rows). */
+  singleLine?: boolean;
 };
 
 const CalloutBlockquote = Blockquote.extend({
@@ -70,6 +72,7 @@ export function RichTextEditor({
   readOnly = false,
   minHeight = 200,
   toolbar = 'full',
+  singleLine = false,
 }: Props) {
   const [, setToolbarTick] = useState(0);
 
@@ -94,6 +97,17 @@ export function RichTextEditor({
     ],
     content: markdownToHtml(value),
     editable: !readOnly,
+    editorProps: singleLine
+      ? {
+          handleKeyDown: (_view, event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              return true;
+            }
+            return false;
+          },
+        }
+      : undefined,
     onUpdate: ({ editor: ed }) => {
       onChange(htmlToMarkdown(ed.getHTML()));
     },
@@ -217,7 +231,10 @@ export function RichTextEditor({
           ) : null}
         </div>
       ) : null}
-      <EditorContent editor={editor} className={styles.editor} />
+      <EditorContent
+        editor={editor}
+        className={`${styles.editor}${singleLine ? ` ${styles.editorCompact}` : ''}`}
+      />
     </div>
   );
 }

@@ -72,6 +72,14 @@
   margin: 0 0 0.75em;
 }
 
+.editorCompact :global(.ProseMirror) {
+  min-height: auto;
+}
+
+.editorCompact :global(.ProseMirror p) {
+  margin: 0;
+}
+
 .editor :global(.ProseMirror p:last-child) {
   margin-bottom: 0;
 }
