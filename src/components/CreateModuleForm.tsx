@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import styles from './CreateSchoolForm.module.css';
 
 export function CreateModuleForm() {
@@ -76,11 +77,11 @@ export function CreateModuleForm() {
         </label>
         <label className={styles.label}>
           Subtitle (optional)
-          <input
-            className={styles.input}
+          <RichTextEditor
             value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
+            onChange={setSubtitle}
             placeholder="Short learner-facing description"
+            minHeight={100}
           />
         </label>
       </div>

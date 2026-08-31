@@ -148,12 +148,22 @@ export function ResourceEditForm({ item }: Props) {
 
         {category !== 'resources' ? (
           <label className={formStyles.label}>
-            Summary (optional — checklist intro shown in the app)
-            <input
-              className={formStyles.input}
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-            />
+            Summary (optional
+            {category === 'checklists' ? ' — checklist intro shown in the app' : ' — bold, headings, links'})
+            {category === 'support' ? (
+              <RichTextEditor
+                key={`support-summary-${item.id}`}
+                value={summary}
+                onChange={setSummary}
+                minHeight={120}
+              />
+            ) : (
+              <input
+                className={formStyles.input}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+              />
+            )}
           </label>
         ) : null}
 

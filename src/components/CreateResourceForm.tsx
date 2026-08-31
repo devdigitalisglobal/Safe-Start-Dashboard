@@ -136,8 +136,13 @@ export function CreateResourceForm() {
 
       {category !== 'resources' ? (
         <label className={styles.label}>
-          Summary (optional)
-          <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
+          Summary (optional
+          {category === 'checklists' ? '' : ' — bold, headings, links'})
+          {category === 'support' ? (
+            <RichTextEditor value={summary} onChange={setSummary} minHeight={100} />
+          ) : (
+            <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
+          )}
         </label>
       ) : null}
 

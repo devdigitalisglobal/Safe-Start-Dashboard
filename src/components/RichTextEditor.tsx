@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect } from 'react';
 import { htmlToMarkdown, markdownToHtml } from '@/lib/markdown';
@@ -53,6 +54,15 @@ export function RichTextEditor({
       StarterKit.configure({
         heading: { levels: [2, 3] },
       }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        defaultProtocol: 'https',
+        HTMLAttributes: {
+          rel: 'noopener noreferrer',
+          target: '_blank',
+        },
+      }),
       Placeholder.configure({ placeholder }),
     ],
     content: markdownToHtml(value),
@@ -66,6 +76,18 @@ export function RichTextEditor({
     if (!editor) return;
     editor.setEditable(!readOnly);
   }, [editor, readOnly]);
+
+  function setLink() {
+    if (!editor) return;
+    const previous = editor.getAttributes('link').href as string | undefined;
+    const url = window.prompt('Enter link URL', previous ?? 'https://');
+    if (url === null) return;
+    if (url.trim() === '') {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+    editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
+  }
 
   if (!editor) {
     return (
@@ -116,6 +138,12 @@ export function RichTextEditor({
             label="1. List"
             active={editor.isActive('orderedList')}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          />
+          <span className={styles.divider} aria-hidden />
+          <ToolbarButton
+            label="Link"
+            active={editor.isActive('link')}
+            onClick={setLink}
           />
         </div>
       ) : null}

@@ -386,11 +386,13 @@ export function ModuleEditForm({
         </label>
         <label className={styles.label}>
           Subtitle
-          <input
-            className={styles.input}
+          <RichTextEditor
+            key={`module-subtitle-${module.id}`}
             value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
+            onChange={setSubtitle}
             readOnly={readOnly}
+            placeholder="Short intro shown on the module screen in the app"
+            minHeight={120}
           />
         </label>
         <MediaPicker

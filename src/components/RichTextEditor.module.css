@@ -108,6 +108,12 @@
   pointer-events: none;
 }
 
+.editor :global(.ProseMirror a) {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .readOnly {
   opacity: 0.85;
 }
