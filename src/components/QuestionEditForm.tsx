@@ -92,7 +92,7 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
 
   return (
     <div className={styles.wrap}>
-      <label className={styles.label}>
+      <div className={styles.label}>
         Question
         <RichTextField
           value={text}
@@ -100,7 +100,7 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
           minHeight={120}
           previewLabel="Question preview"
         />
-      </label>
+      </div>
 
       <label className={styles.label}>
         Knowledge area
@@ -117,7 +117,7 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
         </select>
       </label>
 
-      <label className={styles.label}>
+      <div className={styles.label}>
         Explanation (optional)
         <RichTextField
           value={explanation}
@@ -125,7 +125,7 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
           minHeight={100}
           previewLabel="Explanation preview"
         />
-      </label>
+      </div>
 
       <fieldset className={styles.fieldset}>
         <legend className={styles.legend}>Answer options</legend>

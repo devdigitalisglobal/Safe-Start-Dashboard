@@ -12,6 +12,7 @@ type Props = {
   minHeight?: number;
   previewLabel?: string;
   showPreview?: boolean;
+  toolbar?: 'full' | 'inline';
 };
 
 export function RichTextField({
@@ -22,6 +23,7 @@ export function RichTextField({
   minHeight = 200,
   previewLabel,
   showPreview = true,
+  toolbar = 'full',
 }: Props) {
   return (
     <div className={styles.wrap}>
@@ -32,6 +34,7 @@ export function RichTextField({
           placeholder={placeholder}
           readOnly={readOnly}
           minHeight={minHeight}
+          toolbar={toolbar}
         />
       </div>
       {showPreview && !readOnly ? (

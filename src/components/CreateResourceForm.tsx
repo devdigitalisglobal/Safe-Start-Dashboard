@@ -135,19 +135,19 @@ export function CreateResourceForm() {
       ) : null}
 
       {category !== 'resources' ? (
-        <label className={styles.label}>
+        <div className={styles.label}>
           Summary (optional
           {category === 'checklists' ? '' : ' — bold, headings, links'})
           {category === 'support' ? (
-            <RichTextField value={summary} onChange={setSummary} minHeight={100} previewLabel="Summary preview" />
+            <RichTextField value={summary} onChange={setSummary} minHeight={100} previewLabel="Summary preview" toolbar="inline" />
           ) : (
             <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
           )}
-        </label>
+        </div>
       ) : null}
 
       {category !== 'helpful_links' && category !== 'resources' ? (
-        <label className={styles.label}>
+        <div className={styles.label}>
           Body (optional
           {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
           {category === 'support' ? (
@@ -155,7 +155,7 @@ export function CreateResourceForm() {
           ) : (
             <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
           )}
-        </label>
+        </div>
       ) : null}
 
       {category === 'helpful_links' ? (

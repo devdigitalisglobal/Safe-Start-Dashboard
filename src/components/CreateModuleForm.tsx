@@ -75,7 +75,7 @@ export function CreateModuleForm() {
             placeholder="Buying Your First Car Safely"
           />
         </label>
-        <label className={styles.label}>
+        <div className={styles.label}>
           Subtitle (optional)
           <RichTextField
             value={subtitle}
@@ -83,8 +83,9 @@ export function CreateModuleForm() {
             placeholder="Short learner-facing description"
             minHeight={100}
             previewLabel="Subtitle preview"
+            toolbar="inline"
           />
-        </label>
+        </div>
       </div>
       <button type="submit" className={styles.button} disabled={loading}>
         {loading ? 'Creating…' : 'Create module'}

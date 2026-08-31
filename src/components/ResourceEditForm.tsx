@@ -147,7 +147,7 @@ export function ResourceEditForm({ item }: Props) {
         ) : null}
 
         {category !== 'resources' ? (
-          <label className={formStyles.label}>
+          <div className={formStyles.label}>
             Summary (optional
             {category === 'checklists' ? ' — checklist intro shown in the app' : ' — bold, headings, links'})
             {category === 'support' ? (
@@ -157,6 +157,7 @@ export function ResourceEditForm({ item }: Props) {
                 onChange={setSummary}
                 minHeight={120}
                 previewLabel="Summary preview"
+                toolbar="inline"
               />
             ) : (
               <input
@@ -165,11 +166,11 @@ export function ResourceEditForm({ item }: Props) {
                 onChange={(e) => setSummary(e.target.value)}
               />
             )}
-          </label>
+          </div>
         ) : null}
 
         {category !== 'helpful_links' && category !== 'resources' ? (
-          <label className={formStyles.label}>
+          <div className={formStyles.label}>
             Body (optional
             {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
             {category === 'support' ? (
@@ -188,7 +189,7 @@ export function ResourceEditForm({ item }: Props) {
                 onChange={(e) => setBody(e.target.value)}
               />
             )}
-          </label>
+          </div>
         ) : null}
 
         {category === 'helpful_links' ? (

@@ -236,7 +236,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
             ) : null}
           </legend>
 
-          <label className={styles.label}>
+          <div className={styles.label}>
             Question text
             <RichTextField
               value={question.text}
@@ -245,7 +245,7 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
               minHeight={120}
               previewLabel="Question preview"
             />
-          </label>
+          </div>
 
           {question.options.map((option) => (
             <div key={option.letter} className={styles.optionRow}>

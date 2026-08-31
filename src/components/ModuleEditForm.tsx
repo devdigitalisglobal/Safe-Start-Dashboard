@@ -385,7 +385,7 @@ export function ModuleEditForm({
             readOnly={readOnly}
           />
         </label>
-        <label className={styles.label}>
+        <div className={styles.label}>
           Subtitle
           <RichTextField
             key={`module-subtitle-${module.id}`}
@@ -395,8 +395,9 @@ export function ModuleEditForm({
             placeholder="Short intro shown on the module screen in the app"
             minHeight={120}
             previewLabel="Subtitle preview"
+            toolbar="inline"
           />
-        </label>
+        </div>
         <MediaPicker
           label="Hero image"
           selectedUrl={heroImageUrl}
@@ -407,7 +408,7 @@ export function ModuleEditForm({
             setHeroImageAlt(alt);
           }}
         />
-        <label className={styles.label}>
+        <div className={styles.label}>
           Outcomes (one per line, use **bold** for emphasis)
           <textarea
             className={styles.textarea}
@@ -419,7 +420,7 @@ export function ModuleEditForm({
           {!readOnly ? (
             <MobilePreview markdown={outcomes} variant="outcomes" label="Outcomes preview" />
           ) : null}
-        </label>
+        </div>
         {canWrite ? (
           <button type="button" className={styles.primary} disabled={loading} onClick={saveModule}>
             Save module
@@ -492,7 +493,7 @@ export function ModuleEditForm({
                 autoFocus
               />
             </label>
-            <label className={styles.label}>
+            <div className={styles.label}>
               Body
               <RichTextField
                 key="draft-lesson-body"
@@ -502,7 +503,7 @@ export function ModuleEditForm({
                 minHeight={220}
                 previewLabel="Lesson preview"
               />
-            </label>
+            </div>
             <MediaPicker
               label="Lesson image"
               selectedUrl={draftImageUrl}
@@ -560,7 +561,7 @@ export function ModuleEditForm({
           </label>
         ) : (
           <>
-            <label className={styles.label}>
+            <div className={styles.label}>
               Body
               <RichTextField
                 key={selectedLessonId}
@@ -570,7 +571,7 @@ export function ModuleEditForm({
                 minHeight={220}
                 previewLabel="Lesson preview"
               />
-            </label>
+            </div>
             <MediaPicker
               label="Lesson image"
               selectedUrl={lessonImageUrl}
