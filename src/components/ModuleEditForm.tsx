@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { LessonReorderList } from '@/components/LessonReorderList';
 import { MediaPicker } from '@/components/MediaPicker';
 import { ModuleQuizEditor } from '@/components/ModuleQuizEditor';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import type { AdminModuleDetail, AdminModuleQuizQuestion } from '@/lib/types/admin';
 import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditForm.module.css';
@@ -486,12 +487,12 @@ export function ModuleEditForm({
             </label>
             <label className={styles.label}>
               Body
-              <textarea
-                className={styles.textarea}
-                rows={8}
+              <RichTextEditor
+                key="draft-lesson-body"
                 value={draftBody}
-                onChange={(e) => setDraftBody(e.target.value)}
+                onChange={setDraftBody}
                 placeholder="Lesson content shown in the learner app"
+                minHeight={220}
               />
             </label>
             <MediaPicker
@@ -553,12 +554,12 @@ export function ModuleEditForm({
           <>
             <label className={styles.label}>
               Body
-              <textarea
-                className={styles.textarea}
-                rows={8}
+              <RichTextEditor
+                key={selectedLessonId}
                 value={lessonBody}
-                onChange={(e) => setLessonBody(e.target.value)}
+                onChange={setLessonBody}
                 readOnly={readOnly}
+                minHeight={220}
               />
             </label>
             <MediaPicker

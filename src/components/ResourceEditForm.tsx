@@ -10,6 +10,7 @@ import {
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import type { AdminResourceItem } from '@/lib/types/admin';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import { ResourceDeleteButton } from './ResourceDeleteButton';
 import formStyles from './CreateResourceForm.module.css';
 import editStyles from './ModuleEditForm.module.css';
@@ -158,13 +159,23 @@ export function ResourceEditForm({ item }: Props) {
 
         {category !== 'helpful_links' && category !== 'resources' ? (
           <label className={formStyles.label}>
-            Body (optional — {RESOURCE_BODY_HINT})
-            <textarea
-              className={formStyles.textarea}
-              rows={16}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-            />
+            Body (optional
+            {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
+            {category === 'support' ? (
+              <RichTextEditor
+                key={`support-body-${item.id}`}
+                value={body}
+                onChange={setBody}
+                minHeight={280}
+              />
+            ) : (
+              <textarea
+                className={formStyles.textarea}
+                rows={16}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+              />
+            )}
           </label>
         ) : null}
 

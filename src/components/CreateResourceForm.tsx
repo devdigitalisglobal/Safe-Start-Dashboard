@@ -10,6 +10,7 @@ import {
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import styles from './CreateResourceForm.module.css';
+import { RichTextEditor } from '@/components/RichTextEditor';
 export function CreateResourceForm() {
   const router = useRouter();
   const [category, setCategory] = useState<CmsResourceCategory>('checklists');
@@ -142,8 +143,13 @@ export function CreateResourceForm() {
 
       {category !== 'helpful_links' && category !== 'resources' ? (
         <label className={styles.label}>
-          Body (optional — {RESOURCE_BODY_HINT})
-          <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+          Body (optional
+          {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
+          {category === 'support' ? (
+            <RichTextEditor value={body} onChange={setBody} minHeight={220} />
+          ) : (
+            <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
+          )}
         </label>
       ) : null}
 

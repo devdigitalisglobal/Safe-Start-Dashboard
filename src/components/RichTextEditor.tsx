@@ -1,0 +1,125 @@
+'use client';
+
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Placeholder from '@tiptap/extension-placeholder';
+import { useEffect } from 'react';
+import { htmlToMarkdown, markdownToHtml } from '@/lib/markdown';
+import styles from './RichTextEditor.module.css';
+
+type Props = {
+  value: string;
+  onChange: (markdown: string) => void;
+  placeholder?: string;
+  readOnly?: boolean;
+  minHeight?: number;
+};
+
+function ToolbarButton({
+  label,
+  active,
+  disabled,
+  onClick,
+}: {
+  label: string;
+  active?: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={`${styles.toolbarButton}${active ? ` ${styles.toolbarButtonActive}` : ''}`}
+      disabled={disabled}
+      onClick={onClick}
+      aria-pressed={active}
+      title={label}
+    >
+      {label}
+    </button>
+  );
+}
+
+export function RichTextEditor({
+  value,
+  onChange,
+  placeholder = 'Write content…',
+  readOnly = false,
+  minHeight = 200,
+}: Props) {
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: [
+      StarterKit.configure({
+        heading: { levels: [2, 3] },
+      }),
+      Placeholder.configure({ placeholder }),
+    ],
+    content: markdownToHtml(value),
+    editable: !readOnly,
+    onUpdate: ({ editor: ed }) => {
+      onChange(htmlToMarkdown(ed.getHTML()));
+    },
+  });
+
+  useEffect(() => {
+    if (!editor) return;
+    editor.setEditable(!readOnly);
+  }, [editor, readOnly]);
+
+  if (!editor) {
+    return (
+      <div
+        className={styles.wrap}
+        style={{ ['--editor-min-height' as string]: `${minHeight}px` }}
+      >
+        <div className={styles.editor}>Loading editor…</div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`${styles.wrap}${readOnly ? ` ${styles.readOnly}` : ''}`}
+      style={{ ['--editor-min-height' as string]: `${minHeight}px` }}
+    >
+      {!readOnly ? (
+        <div className={styles.toolbar} role="toolbar" aria-label="Text formatting">
+          <ToolbarButton
+            label="B"
+            active={editor.isActive('bold')}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+          />
+          <ToolbarButton
+            label="I"
+            active={editor.isActive('italic')}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+          />
+          <span className={styles.divider} aria-hidden />
+          <ToolbarButton
+            label="H2"
+            active={editor.isActive('heading', { level: 2 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          />
+          <ToolbarButton
+            label="H3"
+            active={editor.isActive('heading', { level: 3 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          />
+          <span className={styles.divider} aria-hidden />
+          <ToolbarButton
+            label="• List"
+            active={editor.isActive('bulletList')}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+          />
+          <ToolbarButton
+            label="1. List"
+            active={editor.isActive('orderedList')}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          />
+        </div>
+      ) : null}
+      <EditorContent editor={editor} className={styles.editor} />
+    </div>
+  );
+}
