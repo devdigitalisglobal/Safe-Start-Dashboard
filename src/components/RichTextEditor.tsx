@@ -5,7 +5,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Blockquote from '@tiptap/extension-blockquote';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { htmlToMarkdown, markdownToHtml } from '@/lib/markdown';
 import styles from './RichTextEditor.module.css';
 
@@ -76,12 +76,12 @@ export function RichTextEditor({
 }: Props) {
   const [, setToolbarTick] = useState(0);
 
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: [
+  const extensions = useMemo(
+    () => [
       StarterKit.configure({
         heading: { levels: [2, 3] },
         blockquote: false,
+        link: false,
       }),
       CalloutBlockquote,
       Link.configure({
@@ -95,23 +95,32 @@ export function RichTextEditor({
       }),
       Placeholder.configure({ placeholder }),
     ],
-    content: markdownToHtml(value),
-    editable: !readOnly,
-    editorProps: singleLine
-      ? {
-          handleKeyDown: (_view, event) => {
-            if (event.key === 'Enter') {
-              event.preventDefault();
-              return true;
-            }
-            return false;
-          },
-        }
-      : undefined,
-    onUpdate: ({ editor: ed }) => {
-      onChange(htmlToMarkdown(ed.getHTML()));
+    [placeholder]
+  );
+
+  const editor = useEditor(
+    {
+      immediatelyRender: false,
+      extensions,
+      content: markdownToHtml(value),
+      editable: !readOnly,
+      editorProps: singleLine
+        ? {
+            handleKeyDown: (_view, event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                return true;
+              }
+              return false;
+            },
+          }
+        : undefined,
+      onUpdate: ({ editor: ed }) => {
+        onChange(htmlToMarkdown(ed.getHTML()));
+      },
     },
-  });
+    [extensions]
+  );
 
   useEffect(() => {
     if (!editor) return;
