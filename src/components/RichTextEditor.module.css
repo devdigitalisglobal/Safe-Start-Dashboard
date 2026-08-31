@@ -114,6 +114,24 @@
   cursor: pointer;
 }
 
+.editor :global(.ProseMirror blockquote) {
+  margin: 0 0 0.75em;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.editor :global(.ProseMirror blockquote[data-callout='warning']) {
+  background: #231a00;
+  border-color: #f5a93c;
+}
+
+.editor :global(.ProseMirror blockquote[data-callout='tip']) {
+  background: #0c1320;
+  border-color: var(--border);
+}
+
 .readOnly {
   opacity: 0.85;
 }

@@ -2,6 +2,7 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import Blockquote from '@tiptap/extension-blockquote';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useEffect } from 'react';
@@ -15,6 +16,24 @@ type Props = {
   readOnly?: boolean;
   minHeight?: number;
 };
+
+const CalloutBlockquote = Blockquote.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      'data-callout': {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-callout'),
+        renderHTML: (attributes) => {
+          if (!attributes['data-callout']) {
+            return {};
+          }
+          return { 'data-callout': attributes['data-callout'] };
+        },
+      },
+    };
+  },
+});
 
 function ToolbarButton({
   label,
@@ -53,7 +72,9 @@ export function RichTextEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
+        blockquote: false,
       }),
+      CalloutBlockquote,
       Link.configure({
         openOnClick: false,
         autolink: true,
@@ -87,6 +108,19 @@ export function RichTextEditor({
       return;
     }
     editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
+  }
+
+  function insertCallout(variant: 'tip' | 'warning') {
+    if (!editor) return;
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: 'blockquote',
+        attrs: { 'data-callout': variant },
+        content: [{ type: 'paragraph' }],
+      })
+      .run();
   }
 
   if (!editor) {
@@ -144,6 +178,17 @@ export function RichTextEditor({
             label="Link"
             active={editor.isActive('link')}
             onClick={setLink}
+          />
+          <span className={styles.divider} aria-hidden />
+          <ToolbarButton
+            label="Tip"
+            active={editor.isActive('blockquote', { 'data-callout': 'tip' })}
+            onClick={() => insertCallout('tip')}
+          />
+          <ToolbarButton
+            label="Warning"
+            active={editor.isActive('blockquote', { 'data-callout': 'warning' })}
+            onClick={() => insertCallout('warning')}
           />
         </div>
       ) : null}

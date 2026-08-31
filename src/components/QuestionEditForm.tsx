@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { AdminKnowledgeAreasResponse, AdminQuestionsResponse } from '@/lib/types/admin';
+import { RichTextField } from '@/components/RichTextField';
 import styles from './QuestionEditForm.module.css';
 
 type Question = AdminQuestionsResponse['questions'][number];
@@ -93,7 +94,12 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
     <div className={styles.wrap}>
       <label className={styles.label}>
         Question
-        <textarea className={styles.textarea} rows={3} value={text} onChange={(e) => setText(e.target.value)} />
+        <RichTextField
+          value={text}
+          onChange={setText}
+          minHeight={120}
+          previewLabel="Question preview"
+        />
       </label>
 
       <label className={styles.label}>
@@ -113,11 +119,11 @@ export function QuestionEditForm({ question, knowledgeAreas }: Props) {
 
       <label className={styles.label}>
         Explanation (optional)
-        <textarea
-          className={styles.textarea}
-          rows={2}
+        <RichTextField
           value={explanation}
-          onChange={(e) => setExplanation(e.target.value)}
+          onChange={setExplanation}
+          minHeight={100}
+          previewLabel="Explanation preview"
         />
       </label>
 

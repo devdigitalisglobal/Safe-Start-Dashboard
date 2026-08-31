@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import type { AdminModuleQuizQuestion } from '@/lib/types/admin';
+import { RichTextField } from '@/components/RichTextField';
 import styles from './QuestionEditForm.module.css';
 
 const LETTERS = ['A', 'B', 'C', 'D'] as const;
@@ -237,12 +238,12 @@ export function ModuleQuizEditor({ moduleId, initialQuestions, canWrite }: Props
 
           <label className={styles.label}>
             Question text
-            <textarea
-              className={styles.textarea}
-              rows={3}
+            <RichTextField
               value={question.text}
-              onChange={(e) => updateQuestionText(question.orderIndex, e.target.value)}
+              onChange={(value) => updateQuestionText(question.orderIndex, value)}
               readOnly={readOnly}
+              minHeight={120}
+              previewLabel="Question preview"
             />
           </label>
 

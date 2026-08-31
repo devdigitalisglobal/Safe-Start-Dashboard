@@ -6,7 +6,8 @@ import { createClient } from '@/lib/supabase/client';
 import { LessonReorderList } from '@/components/LessonReorderList';
 import { MediaPicker } from '@/components/MediaPicker';
 import { ModuleQuizEditor } from '@/components/ModuleQuizEditor';
-import { RichTextEditor } from '@/components/RichTextEditor';
+import { RichTextField } from '@/components/RichTextField';
+import { MobilePreview } from '@/components/MobilePreview';
 import type { AdminModuleDetail, AdminModuleQuizQuestion } from '@/lib/types/admin';
 import type { ModuleEditorTab } from '@/lib/moduleEditor';
 import styles from './ModuleEditForm.module.css';
@@ -386,13 +387,14 @@ export function ModuleEditForm({
         </label>
         <label className={styles.label}>
           Subtitle
-          <RichTextEditor
+          <RichTextField
             key={`module-subtitle-${module.id}`}
             value={subtitle}
             onChange={setSubtitle}
             readOnly={readOnly}
             placeholder="Short intro shown on the module screen in the app"
             minHeight={120}
+            previewLabel="Subtitle preview"
           />
         </label>
         <MediaPicker
@@ -406,7 +408,7 @@ export function ModuleEditForm({
           }}
         />
         <label className={styles.label}>
-          Outcomes (one per line)
+          Outcomes (one per line, use **bold** for emphasis)
           <textarea
             className={styles.textarea}
             rows={5}
@@ -414,6 +416,9 @@ export function ModuleEditForm({
             onChange={(e) => setOutcomes(e.target.value)}
             readOnly={readOnly}
           />
+          {!readOnly ? (
+            <MobilePreview markdown={outcomes} variant="outcomes" label="Outcomes preview" />
+          ) : null}
         </label>
         {canWrite ? (
           <button type="button" className={styles.primary} disabled={loading} onClick={saveModule}>
@@ -489,12 +494,13 @@ export function ModuleEditForm({
             </label>
             <label className={styles.label}>
               Body
-              <RichTextEditor
+              <RichTextField
                 key="draft-lesson-body"
                 value={draftBody}
                 onChange={setDraftBody}
                 placeholder="Lesson content shown in the learner app"
                 minHeight={220}
+                previewLabel="Lesson preview"
               />
             </label>
             <MediaPicker
@@ -556,12 +562,13 @@ export function ModuleEditForm({
           <>
             <label className={styles.label}>
               Body
-              <RichTextEditor
+              <RichTextField
                 key={selectedLessonId}
                 value={lessonBody}
                 onChange={setLessonBody}
                 readOnly={readOnly}
                 minHeight={220}
+                previewLabel="Lesson preview"
               />
             </label>
             <MediaPicker

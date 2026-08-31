@@ -10,7 +10,7 @@ import {
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import styles from './CreateResourceForm.module.css';
-import { RichTextEditor } from '@/components/RichTextEditor';
+import { RichTextField } from '@/components/RichTextField';
 export function CreateResourceForm() {
   const router = useRouter();
   const [category, setCategory] = useState<CmsResourceCategory>('checklists');
@@ -139,7 +139,7 @@ export function CreateResourceForm() {
           Summary (optional
           {category === 'checklists' ? '' : ' — bold, headings, links'})
           {category === 'support' ? (
-            <RichTextEditor value={summary} onChange={setSummary} minHeight={100} />
+            <RichTextField value={summary} onChange={setSummary} minHeight={100} previewLabel="Summary preview" />
           ) : (
             <input className={styles.input} value={summary} onChange={(e) => setSummary(e.target.value)} />
           )}
@@ -151,7 +151,7 @@ export function CreateResourceForm() {
           Body (optional
           {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
           {category === 'support' ? (
-            <RichTextEditor value={body} onChange={setBody} minHeight={220} />
+            <RichTextField value={body} onChange={setBody} minHeight={220} previewLabel="Article preview" />
           ) : (
             <textarea className={styles.textarea} rows={8} value={body} onChange={(e) => setBody(e.target.value)} />
           )}

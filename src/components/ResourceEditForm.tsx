@@ -10,7 +10,7 @@ import {
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import type { AdminResourceItem } from '@/lib/types/admin';
-import { RichTextEditor } from '@/components/RichTextEditor';
+import { RichTextField } from '@/components/RichTextField';
 import { ResourceDeleteButton } from './ResourceDeleteButton';
 import formStyles from './CreateResourceForm.module.css';
 import editStyles from './ModuleEditForm.module.css';
@@ -151,11 +151,12 @@ export function ResourceEditForm({ item }: Props) {
             Summary (optional
             {category === 'checklists' ? ' — checklist intro shown in the app' : ' — bold, headings, links'})
             {category === 'support' ? (
-              <RichTextEditor
+              <RichTextField
                 key={`support-summary-${item.id}`}
                 value={summary}
                 onChange={setSummary}
                 minHeight={120}
+                previewLabel="Summary preview"
               />
             ) : (
               <input
@@ -172,11 +173,12 @@ export function ResourceEditForm({ item }: Props) {
             Body (optional
             {category === 'checklists' ? ` — ${RESOURCE_BODY_HINT}` : ' — bold, headings, lists'})
             {category === 'support' ? (
-              <RichTextEditor
+              <RichTextField
                 key={`support-body-${item.id}`}
                 value={body}
                 onChange={setBody}
                 minHeight={280}
+                previewLabel="Article preview"
               />
             ) : (
               <textarea

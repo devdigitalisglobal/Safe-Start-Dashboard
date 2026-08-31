@@ -1,0 +1,16 @@
+.wrap {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+@media (min-width: 960px) {
+  .wrap {
+    grid-template-columns: 1fr min(360px, 40%);
+    align-items: start;
+  }
+}
+
+.editorCol {
+  min-width: 0;
+}
