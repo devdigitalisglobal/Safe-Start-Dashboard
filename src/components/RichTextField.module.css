@@ -14,3 +14,13 @@
 .editorCol {
   min-width: 0;
 }
+
+.loadingEditor {
+  min-height: 120px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-alt);
+  color: var(--text-muted);
+  font-size: 14px;
+}

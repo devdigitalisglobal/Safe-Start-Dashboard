@@ -1,8 +1,18 @@
 'use client';
 
-import { RichTextEditor } from '@/components/RichTextEditor';
+import dynamic from 'next/dynamic';
 import { MobilePreview } from '@/components/MobilePreview';
 import styles from './RichTextField.module.css';
+
+const RichTextEditor = dynamic(
+  () => import('@/components/RichTextEditor').then((mod) => mod.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className={styles.loadingEditor}>Loading editor…</div>
+    ),
+  }
+);
 
 type Props = {
   value: string;
