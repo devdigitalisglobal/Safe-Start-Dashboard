@@ -89,14 +89,17 @@ export function MobilePreview({ markdown, label = 'App preview', variant = 'mark
 
             if (block.type === 'bullet') {
               return (
-                <ul key={key} className={styles.list}>
+                <div key={key} className={styles.bulletList}>
                   {block.items.map((item, itemIndex) => (
-                    <li
-                      key={`${key}-${itemIndex}`}
-                      dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(item) }}
-                    />
+                    <div key={`${key}-${itemIndex}`} className={styles.bulletRow}>
+                      <span className={styles.bulletIcon} aria-hidden />
+                      <span
+                        className={styles.bulletText}
+                        dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(item) }}
+                      />
+                    </div>
                   ))}
-                </ul>
+                </div>
               );
             }
 

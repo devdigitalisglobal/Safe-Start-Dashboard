@@ -62,6 +62,42 @@
   margin-bottom: 4px;
 }
 
+.bulletList {
+  margin: 0 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bulletRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.bulletIcon {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  margin-top: 3px;
+  background: no-repeat center / contain
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5.5 12.5L10 17L18.5 6.5' stroke='%23268cf5' stroke-width='2.75' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+.bulletText {
+  color: #8fa0b8;
+  font-size: 14px;
+  line-height: 1.5;
+  flex: 1;
+  min-width: 0;
+}
+
+.bulletText strong {
+  color: #fff;
+  font-weight: 700;
+}
+
 .calloutTip {
   margin: 0 0 8px;
   padding: 12px;

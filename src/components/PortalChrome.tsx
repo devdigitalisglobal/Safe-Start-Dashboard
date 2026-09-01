@@ -122,6 +122,7 @@ export function PortalChrome({ profile, children }: Props) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const sections = buildNav(profile);
+  const homeHref = isDashboardRole(profile.role) ? '/' : '/admin/modules';
 
   function closeMenu() {
     setMenuOpen(false);
@@ -142,10 +143,15 @@ export function PortalChrome({ profile, children }: Props) {
         id="portal-sidebar"
         className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}
       >
-        <div className={styles.brand}>
+        <Link
+          href={homeHref}
+          className={styles.brandLink}
+          aria-label="Safe Start Staff Portal home"
+          onClick={closeMenu}
+        >
           <p className={styles.brandEyebrow}>Safe Start</p>
           <p className={styles.brandTitle}>Staff Portal</p>
-        </div>
+        </Link>
 
         <nav className={styles.nav} aria-label="Main navigation">
           {sections.map((section) => (
@@ -198,7 +204,13 @@ export function PortalChrome({ profile, children }: Props) {
           >
             {menuOpen ? 'Close' : 'Menu'}
           </button>
-          <p className={styles.mobileTitle}>Safe Start Staff Portal</p>
+          <Link
+            href={homeHref}
+            className={styles.mobileTitleLink}
+            onClick={closeMenu}
+          >
+            Safe Start Staff Portal
+          </Link>
         </header>
         <div className={styles.content}>{children}</div>
       </div>

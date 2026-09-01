@@ -33,9 +33,22 @@
   transform: translateX(0);
 }
 
-.brand {
+.brandLink {
+  display: block;
   margin-bottom: 28px;
-  padding: 0 8px;
+  padding: 8px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brandLink:hover {
+  background: var(--surface-alt);
+}
+
+.brandLink:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .brandEyebrow {
@@ -160,9 +173,21 @@
   cursor: pointer;
 }
 
-.mobileTitle {
+.mobileTitleLink {
   font-size: 14px;
   font-weight: 600;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mobileTitleLink:hover {
+  color: var(--primary);
+}
+
+.mobileTitleLink:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .content {
