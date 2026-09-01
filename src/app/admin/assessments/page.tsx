@@ -41,8 +41,12 @@ export default async function AdminAssessmentsPage() {
                 <td>{assessment.questionCount}</td>
                 <td>{assessment.status}</td>
                 <td>
+                  <Link className={styles.link} href={`/admin/assessments/${assessment.type}/details`}>
+                    Intro &amp; image
+                  </Link>
+                  {' · '}
                   <Link className={styles.link} href={`/admin/assessments/${assessment.type}`}>
-                    Edit questions
+                    Questions
                   </Link>
                 </td>
               </tr>

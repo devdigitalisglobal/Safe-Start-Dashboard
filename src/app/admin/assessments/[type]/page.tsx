@@ -39,6 +39,9 @@ export default async function AdminAssessmentQuestionsPage({ params }: Props) {
       ) : (
         <>
           <div className={styles.introActions}>
+            <Link className={styles.secondaryButton} href={`/admin/assessments/${type}/details`}>
+              Intro &amp; image
+            </Link>
             <Link className={styles.primaryButton} href={`/admin/assessments/${type}/questions/new`}>
               Add question
             </Link>

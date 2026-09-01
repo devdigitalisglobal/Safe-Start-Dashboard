@@ -95,6 +95,20 @@ export type AdminAssessmentsResponse = {
   }[];
 };
 
+export type AdminAssessmentDetailResponse = {
+  assessment: {
+    id: string;
+    type: string;
+    title: string;
+    subtitle: string | null;
+    description: string | null;
+    heroImageUrl: string | null;
+    heroImageAlt: string | null;
+    status: string;
+    questionCount: number;
+  };
+};
+
 export type AdminQuestionsResponse = {
   assessment: { id: string; type: string; title: string };
   questions: {
