@@ -48,7 +48,23 @@ export type ReachResponse = {
     reason?: string;
   };
   appDownloads: { available: boolean; value: null; note: string };
+  demographics: DemographicsBreakdown;
 };
+
+export type BreakdownItem = { key: string; label: string; count: number };
+
+export type DemographicsBreakdown =
+  | {
+      suppressed: true;
+      reason: string;
+      educationType: null;
+      licenceStatus: null;
+    }
+  | {
+      suppressed: false;
+      educationType: { items: BreakdownItem[]; unknown: number };
+      licenceStatus: { items: BreakdownItem[]; unknown: number };
+    };
 
 export type EngagementResponse = {
   filters: DashboardFilters;

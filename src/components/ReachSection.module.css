@@ -17,3 +17,31 @@
   border-radius: 12px;
   border: 1px dashed var(--border);
 }
+
+.demographics {
+  margin-top: 24px;
+}
+
+.subheading {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.breakdowns {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .breakdowns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
