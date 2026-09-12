@@ -1,7 +1,6 @@
 import { PageHeader } from '@/components/PageHeader';
 import { AssessmentEditForm } from '@/components/AssessmentEditForm';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { contentAssessmentsCrumbs, formatAssessmentType } from '@/lib/cmsBreadcrumbs';
 import type { AdminAssessmentDetailResponse } from '@/lib/types/admin';
 
@@ -12,7 +11,7 @@ type Props = {
 export default async function AdminAssessmentDetailsPage({ params }: Props) {
   const { type } = await params;
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminAssessmentDetailResponse>(`assessments/${type}`, token);
+  const data = await fetchAdminApi<AdminAssessmentDetailResponse>(`assessments/${type}`, token);
   const assessmentLabel = formatAssessmentType(data.assessment.type);
 
   return (

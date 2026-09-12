@@ -2,8 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { isMfaRequiredError } from '@/lib/api';
-import { createClient } from '@/lib/supabase/client';
+import { portalFetch } from '@/lib/portalFetch';
 import { roleLabel } from '@/lib/roles';
 import type {
   AdminPartnersResponse,
@@ -46,37 +45,10 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
   }, [fullName, needsSchool, needsPartner, schoolId, partnerId]);
 
   async function apiCall(path: string, method: string, body?: unknown) {
-    const supabase = createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error('Not signed in');
-
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) throw new Error('API URL is not configured');
-
-    const response = await fetch(`${apiUrl}/admin/users/${path}`, {
+    return portalFetch(`/admin/users/${path}`, {
       method,
-      headers: {
-        Authorization: `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json',
-      },
       body: body ? JSON.stringify(body) : undefined,
     });
-
-    if (!response.ok) {
-      let detail = response.statusText;
-      try {
-        const payload = (await response.json()) as { message?: string };
-        detail = payload.message ?? detail;
-      } catch {
-        // ignore
-      }
-      throw new Error(detail);
-    }
-
-    if (response.status === 204) return null;
-    return response.json();
   }
 
   async function save(e: React.FormEvent) {
@@ -95,10 +67,6 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage('User updated.');
       router.refresh();
     } catch (err) {
-      if (isMfaRequiredError(err)) {
-        router.push('/account/mfa');
-        return;
-      }
       setError(err instanceof Error ? err.message : 'Save failed');
     } finally {
       setLoading(false);
@@ -115,10 +83,6 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage(isDeactivated ? 'User reactivated.' : 'User deactivated.');
       router.refresh();
     } catch (err) {
-      if (isMfaRequiredError(err)) {
-        router.push('/account/mfa');
-        return;
-      }
       setError(err instanceof Error ? err.message : 'Action failed');
     } finally {
       setLoading(false);
@@ -139,10 +103,6 @@ export function PortalUserDetailForm({ user, schools, partners }: Props) {
       setMessage('MFA reset. User must enroll a new authenticator on next login.');
       router.refresh();
     } catch (err) {
-      if (isMfaRequiredError(err)) {
-        router.push('/account/mfa');
-        return;
-      }
       setError(err instanceof Error ? err.message : 'MFA reset failed');
     } finally {
       setLoading(false);

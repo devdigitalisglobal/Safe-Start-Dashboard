@@ -1,13 +1,12 @@
 import { MediaLibraryGrid } from '@/components/MediaLibraryGrid';
 import { MediaUploadForm } from '@/components/MediaUploadForm';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import type { AdminMediaResponse } from '@/lib/types/admin';
 
 export default async function AdminMediaPage() {
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminMediaResponse>('media', token);
+  const data = await fetchAdminApi<AdminMediaResponse>('media', token);
 
   return (
     <>

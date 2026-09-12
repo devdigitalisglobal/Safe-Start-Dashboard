@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { contentAssessmentsCrumbs } from '@/lib/cmsBreadcrumbs';import type { AdminAssessmentsResponse } from '@/lib/types/admin';
 import styles from '../modules/page.module.css';
 
@@ -11,7 +10,7 @@ function formatType(type: string) {
 
 export default async function AdminAssessmentsPage() {
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminAssessmentsResponse>('assessments', token);
+  const data = await fetchAdminApi<AdminAssessmentsResponse>('assessments', token);
 
   return (
     <>

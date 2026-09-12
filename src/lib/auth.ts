@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
-import { ApiError, apiFetch } from '@/lib/api';
+import { ApiError, apiFetch, apiGetAdmin } from '@/lib/api';
 import {
   CMS_ROLES,
   DASHBOARD_ROLES,
@@ -155,4 +155,32 @@ export async function requirePortalUser(): Promise<{
   }
 
   return session;
+}
+
+/** Server-side admin API read — redirects to MFA when the JWT is AAL1 only. */
+export async function fetchAdminApi<T>(path: string, token: string): Promise<T> {
+  try {
+    return await apiGetAdmin<T>(path, token);
+  } catch (err) {
+    if (err instanceof ApiError && err.code === 'MFA_REQUIRED') {
+      redirect('/account/mfa');
+    }
+    throw err;
+  }
+}
+
+/** Server-side dashboard API read — redirects to MFA when the JWT is AAL1 only. */
+export async function fetchDashboardApi<T>(
+  path: string,
+  token: string,
+  filters?: Parameters<typeof apiFetch>[2]
+): Promise<T> {
+  try {
+    return await apiFetch<T>(path, token, filters);
+  } catch (err) {
+    if (err instanceof ApiError && err.code === 'MFA_REQUIRED') {
+      redirect('/account/mfa');
+    }
+    throw err;
+  }
 }

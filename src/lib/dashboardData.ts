@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { apiFetch } from '@/lib/api';
+import { fetchDashboardApi } from '@/lib/auth';
 import type {
   DashboardFilters,
   DashboardOverviewResponse,
@@ -17,7 +17,7 @@ function toFilters(schoolId: string, from: string, to: string): DashboardFilters
 /** One HTTP call for all four reporting sections (deduped per request via React cache). */
 export const fetchDashboardOverview = cache(
   async (token: string, schoolId: string, from: string, to: string) =>
-    apiFetch<DashboardOverviewResponse>(
+    fetchDashboardApi<DashboardOverviewResponse>(
       '/dashboard/overview',
       token,
       toFilters(schoolId, from, to)
@@ -25,7 +25,7 @@ export const fetchDashboardOverview = cache(
 );
 
 export const fetchDashboardSchools = cache(async (token: string) =>
-  apiFetch<SchoolsResponse>('/dashboard/schools', token).catch(() => ({ schools: [] }))
+  fetchDashboardApi<SchoolsResponse>('/dashboard/schools', token).catch(() => ({ schools: [] }))
 );
 
 export function dashboardFilterArgs(filters: DashboardFilters) {

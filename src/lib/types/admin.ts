@@ -29,7 +29,6 @@ export type AdminPortalUser = {
   partnerName: string | null;
   lastActiveAt: string | null;
   registeredAt: string;
-  /** null until Phase 2 wires Supabase MFA lookup */
   mfaEnrolled: boolean | null;
   status: 'active' | 'deactivated';
   unusedRecoveryCodes?: number;

@@ -1,8 +1,7 @@
 import { PageHeader } from '@/components/PageHeader';
 import { SchoolInviteForm } from '@/components/SchoolInviteForm';
 import { SchoolPartnerForm } from '@/components/SchoolPartnerForm';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { organisationSchoolsCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminPartnersResponse, AdminSchoolInvitationsResponse } from '@/lib/types/admin';
 import styles from '../../modules/page.module.css';
@@ -15,8 +14,8 @@ export default async function AdminSchoolDetailPage({ params }: Props) {
   const { id } = await params;
   const { token } = await requireStaffUser();
   const [data, partnersData] = await Promise.all([
-    apiGetAdmin<AdminSchoolInvitationsResponse>(`schools/${id}/invitations`, token),
-    apiGetAdmin<AdminPartnersResponse>('partners', token),
+    fetchAdminApi<AdminSchoolInvitationsResponse>(`schools/${id}/invitations`, token),
+    fetchAdminApi<AdminPartnersResponse>('partners', token),
   ]);
 
   return (

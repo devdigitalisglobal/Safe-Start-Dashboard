@@ -1,7 +1,6 @@
 import { PageHeader } from '@/components/PageHeader';
 import { ResourceEditForm } from '@/components/ResourceEditForm';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { contentResourcesCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminResourceItem } from '@/lib/types/admin';
 
@@ -15,7 +14,7 @@ export default async function AdminResourceEditPage({ params }: Props) {
 
   let item: AdminResourceItem;
   try {
-    item = await apiGetAdmin<AdminResourceItem>(`resources/${id}`, token);
+    item = await fetchAdminApi<AdminResourceItem>(`resources/${id}`, token);
   } catch {
     return (
       <PageHeader

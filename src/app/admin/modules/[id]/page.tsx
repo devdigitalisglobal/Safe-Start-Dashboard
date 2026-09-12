@@ -2,8 +2,7 @@ import { ModuleDeleteButton } from '@/components/ModuleDeleteButton';
 import { ModuleEditForm } from '@/components/ModuleEditForm';
 import { ModuleEditorTabs } from '@/components/ModuleEditorTabs';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { isStaffRole, requireCmsUser } from '@/lib/auth';
+import { fetchAdminApi, isStaffRole, requireCmsUser } from '@/lib/auth';
 import { contentModulesCrumbs } from '@/lib/cmsBreadcrumbs';
 import { moduleEditorTabLabel, parseModuleEditorTab } from '@/lib/moduleEditor';
 import type { AdminModuleDetail, AdminModuleQuizResponse } from '@/lib/types/admin';
@@ -25,8 +24,8 @@ export default async function AdminModuleEditPage({ params, searchParams }: Prop
   const { token, profile } = await requireCmsUser();
 
   const [module, quiz] = await Promise.all([
-    apiGetAdmin<AdminModuleDetail>(`modules/${id}`, token),
-    apiGetAdmin<AdminModuleQuizResponse>(`modules/${id}/quiz`, token),
+    fetchAdminApi<AdminModuleDetail>(`modules/${id}`, token),
+    fetchAdminApi<AdminModuleQuizResponse>(`modules/${id}/quiz`, token),
   ]);
 
   const canWrite = isStaffRole(profile.role);

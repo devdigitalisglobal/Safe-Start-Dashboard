@@ -3,8 +3,7 @@ import { CreateModuleForm } from '@/components/CreateModuleForm';
 import { ModuleDeleteButton } from '@/components/ModuleDeleteButton';
 import { ModuleReorderList } from '@/components/ModuleReorderList';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { isStaffRole, requireCmsUser } from '@/lib/auth';
+import { fetchAdminApi, isStaffRole, requireCmsUser } from '@/lib/auth';
 import { contentModulesCrumbs, organisationSchoolsCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminModulesResponse } from '@/lib/types/admin';
 import styles from './page.module.css';
@@ -18,7 +17,7 @@ export default async function AdminModulesPage({ searchParams }: Props) {
   const staffOnlyNotice = params.error === 'staff_only';
   const superAdminOnlyNotice = params.error === 'super_admin_only';
   const { token, profile } = await requireCmsUser();
-  const data = await apiGetAdmin<AdminModulesResponse>('modules', token);
+  const data = await fetchAdminApi<AdminModulesResponse>('modules', token);
   const canWrite = isStaffRole(profile.role);
 
   return (

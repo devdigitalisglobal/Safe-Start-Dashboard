@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { AuditExportButton } from '@/components/AuditExportButton';
 import { EmptyState } from '@/components/EmptyState';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import type { AdminAuditResponse } from '@/lib/types/admin';
 import styles from '../modules/page.module.css';
 
@@ -32,7 +31,7 @@ export default async function AdminAuditPage({ searchParams }: Props) {
   if (type) query.set('type', type);
 
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminAuditResponse>(`audit?${query}`, token);
+  const data = await fetchAdminApi<AdminAuditResponse>(`audit?${query}`, token);
 
   return (
     <>

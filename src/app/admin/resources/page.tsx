@@ -2,8 +2,7 @@ import Link from 'next/link';
 import { CreateResourceForm } from '@/components/CreateResourceForm';
 import { PageHeader } from '@/components/PageHeader';
 import { ResourceDeleteButton } from '@/components/ResourceDeleteButton';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { contentResourcesCrumbs } from '@/lib/cmsBreadcrumbs';
 import {
   CMS_RESOURCE_CATEGORY_LABELS,
@@ -14,7 +13,7 @@ import styles from '../modules/page.module.css';
 
 export default async function AdminResourcesPage() {
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminResourcesResponse>('resources', token);
+  const data = await fetchAdminApi<AdminResourcesResponse>('resources', token);
 
   const grouped = data.items.reduce<Record<string, typeof data.items>>((acc, item) => {
     acc[item.category] ??= [];

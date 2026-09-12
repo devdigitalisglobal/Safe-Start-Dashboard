@@ -1,7 +1,6 @@
 import { PageHeader } from '@/components/PageHeader';
 import { InvitePortalUserForm } from '@/components/InvitePortalUserForm';
-import { apiGetAdmin } from '@/lib/api';
-import { requireSuperAdminUser } from '@/lib/auth';
+import { fetchAdminApi, requireSuperAdminUser } from '@/lib/auth';
 import { organisationTeamCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminPartnersResponse, AdminSchoolsResponse } from '@/lib/types/admin';
 
@@ -9,8 +8,8 @@ export default async function AdminUsersNewPage() {
   const { token } = await requireSuperAdminUser();
 
   const [schoolsData, partnersData] = await Promise.all([
-    apiGetAdmin<AdminSchoolsResponse>('schools', token),
-    apiGetAdmin<AdminPartnersResponse>('partners', token),
+    fetchAdminApi<AdminSchoolsResponse>('schools', token),
+    fetchAdminApi<AdminPartnersResponse>('partners', token),
   ]);
 
   return (

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@/lib/supabase/client';
+import { portalFetch } from '@/lib/portalFetch';
 import { LessonReorderList } from '@/components/LessonReorderList';
 import { MediaPicker } from '@/components/MediaPicker';
 import { ModuleQuizEditor } from '@/components/ModuleQuizEditor';
@@ -77,56 +77,13 @@ export function ModuleEditForm({
     setLessonTakeaways(lesson?.takeaways.map((t) => t.text).join('\n') ?? '');
   }
 
-  async function authedFetch(path: string, init: RequestInit = {}) {
-    const supabase = createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error('Not signed in');
-
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    if (!apiUrl) throw new Error('API URL is not configured');
-
-    const headers: Record<string, string> = {
-      Authorization: `Bearer ${session.access_token}`,
-      ...(init.headers as Record<string, string> | undefined),
-    };
-
-    if (init.body != null) {
-      headers['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(`${apiUrl}${path}`, {
-      ...init,
-      headers,
-    });
-
-    if (!response.ok) {
-      let detail = response.statusText;
-      try {
-        const body = (await response.json()) as { message?: string; error?: string };
-        detail = body.message ?? body.error ?? detail;
-      } catch {
-        // ignore
-      }
-      throw new Error(detail);
-    }
-
-    if (response.status === 204) return undefined;
-
-    const text = await response.text();
-    if (!text) return undefined;
-
-    return JSON.parse(text) as unknown;
-  }
-
   async function saveModule() {
     setLoading(true);
     setError(null);
     setMessage(null);
 
     try {
-      await authedFetch(`/admin/modules/${module.id}`, {
+      await portalFetch(`/admin/modules/${module.id}`, {
         method: 'PATCH',
         body: JSON.stringify({
           title,
@@ -172,7 +129,7 @@ export function ModuleEditForm({
           .filter(Boolean);
       }
 
-      await authedFetch(`/admin/modules/${module.id}/lessons/${selectedLessonId}`, {
+      await portalFetch(`/admin/modules/${module.id}/lessons/${selectedLessonId}`, {
         method: 'PATCH',
         body: JSON.stringify(payload),
       });
@@ -215,7 +172,7 @@ export function ModuleEditForm({
     setMessage(null);
 
     try {
-      const created = (await authedFetch(`/admin/modules/${module.id}/lessons`, {
+      const created = (await portalFetch(`/admin/modules/${module.id}/lessons`, {
         method: 'POST',
         body: JSON.stringify({
           heading,
@@ -251,7 +208,7 @@ export function ModuleEditForm({
     setMessage(null);
 
     try {
-      await authedFetch(`/admin/modules/${module.id}/lessons/${selectedLessonId}`, {
+      await portalFetch(`/admin/modules/${module.id}/lessons/${selectedLessonId}`, {
         method: 'DELETE',
       });
       setMessage('Lesson deleted.');
@@ -277,7 +234,7 @@ export function ModuleEditForm({
           ? { method: 'POST', body: JSON.stringify({ reason: rejectReason || undefined }) }
           : { method: 'POST', body: '{}' };
 
-      const result = (await authedFetch(path, init)) as { status: string };
+      const result = (await portalFetch(path, init)) as { status: string };
       setStatus(result.status);
 
       const messages: Record<typeof action, string> = {

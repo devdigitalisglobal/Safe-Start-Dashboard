@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { EmptyState } from '@/components/EmptyState';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireSuperAdminUser } from '@/lib/auth';
+import { fetchAdminApi, requireSuperAdminUser } from '@/lib/auth';
 import { roleLabel } from '@/lib/roles';
 import { organisationTeamCrumbs } from '@/lib/cmsBreadcrumbs';
 import type { AdminPortalUsersResponse } from '@/lib/types/admin';
@@ -10,7 +9,7 @@ import styles from '../modules/page.module.css';
 
 export default async function AdminUsersPage() {
   const { token } = await requireSuperAdminUser();
-  const data = await apiGetAdmin<AdminPortalUsersResponse>('users', token);
+  const data = await fetchAdminApi<AdminPortalUsersResponse>('users', token);
 
   return (
     <>

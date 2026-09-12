@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { EmptyState } from '@/components/EmptyState';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import { contentAssessmentsCrumbs, formatAssessmentType } from '@/lib/cmsBreadcrumbs';
 import type { AdminQuestionsResponse } from '@/lib/types/admin';
 import styles from '../../modules/page.module.css';
@@ -14,7 +13,7 @@ type Props = {
 export default async function AdminAssessmentQuestionsPage({ params }: Props) {
   const { type } = await params;
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminQuestionsResponse>(`assessments/${type}/questions`, token);
+  const data = await fetchAdminApi<AdminQuestionsResponse>(`assessments/${type}/questions`, token);
   const assessmentLabel = formatAssessmentType(data.assessment.type);
 
   return (

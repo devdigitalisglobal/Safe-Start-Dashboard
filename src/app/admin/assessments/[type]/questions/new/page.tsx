@@ -1,7 +1,6 @@
 import { PageHeader } from '@/components/PageHeader';
 import { QuestionCreateForm } from '@/components/QuestionCreateForm';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import {
   contentAssessmentsCrumbs,
   formatAssessmentType,
@@ -21,9 +20,9 @@ export default async function AdminQuestionCreatePage({ params }: Props) {
   const { token } = await requireStaffUser();
 
   const [questionsData, areasData, modulesData] = await Promise.all([
-    apiGetAdmin<AdminQuestionsResponse>(`assessments/${type}/questions`, token),
-    apiGetAdmin<AdminKnowledgeAreasResponse>('assessments/knowledge-areas', token),
-    apiGetAdmin<AdminModulesResponse>('modules', token),
+    fetchAdminApi<AdminQuestionsResponse>(`assessments/${type}/questions`, token),
+    fetchAdminApi<AdminKnowledgeAreasResponse>('assessments/knowledge-areas', token),
+    fetchAdminApi<AdminModulesResponse>('modules', token),
   ]);
 
   const assessmentLabel = formatAssessmentType(type);

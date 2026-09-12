@@ -1,14 +1,13 @@
 import Link from 'next/link';
 import { CreatePartnerForm } from '@/components/CreatePartnerForm';
 import { PageHeader } from '@/components/PageHeader';
-import { apiGetAdmin } from '@/lib/api';
-import { requireStaffUser } from '@/lib/auth';
+import { fetchAdminApi, requireStaffUser } from '@/lib/auth';
 import type { AdminPartnersResponse } from '@/lib/types/admin';
 import styles from '../modules/page.module.css';
 
 export default async function AdminPartnersPage() {
   const { token } = await requireStaffUser();
-  const data = await apiGetAdmin<AdminPartnersResponse>('partners', token);
+  const data = await fetchAdminApi<AdminPartnersResponse>('partners', token);
 
   return (
     <>
