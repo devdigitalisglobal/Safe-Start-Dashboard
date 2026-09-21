@@ -76,6 +76,11 @@ function buildNav(profile: UserProfile) {
 
     if (isSuperAdminRole(profile.role)) {
       organisationItems.push({
+        href: '/admin/learners',
+        label: 'App users',
+        isActive: (pathname) => pathname.startsWith('/admin/learners'),
+      });
+      organisationItems.push({
         href: '/admin/users',
         label: 'Team',
         isActive: (pathname) => pathname.startsWith('/admin/users'),

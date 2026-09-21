@@ -33,6 +33,13 @@ export function organisationTeamCrumbs(): CmsCrumb[] {
   ];
 }
 
+export function organisationLearnersCrumbs(): CmsCrumb[] {
+  return [
+    { label: 'Organisation', href: '/admin/schools' },
+    { label: 'App users', href: '/admin/learners' },
+  ];
+}
+
 export function organisationSchoolsCrumbs(): CmsCrumb[] {
   return [
     { label: 'Organisation', href: '/admin/schools' },

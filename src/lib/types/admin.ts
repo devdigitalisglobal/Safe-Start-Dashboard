@@ -242,3 +242,38 @@ export type AdminResourceItem = {
 export type AdminResourcesResponse = {
   items: AdminResourceItem[];
 };
+
+export type AdminLearnerStatus = 'active' | 'suspended' | 'deleted';
+
+export type AdminLearnerSummary = {
+  id: string;
+  email: string;
+  fullName: string;
+  firstName: string | null;
+  lastName: string | null;
+  schoolId: string | null;
+  schoolName: string | null;
+  registeredAt: string;
+  lastActiveAt: string | null;
+  suspendedAt: string | null;
+  suspendedReason: string | null;
+  deletedAt: string | null;
+  status: AdminLearnerStatus;
+};
+
+export type AdminLearnersResponse = {
+  learners: AdminLearnerSummary[];
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
+export type AdminLearnerDetail = AdminLearnerSummary & {
+  progress: {
+    modulesCompleted: number;
+    modulesInProgress: number;
+    startingGridCompleted: boolean;
+    finishLineCompleted: boolean;
+  };
+};

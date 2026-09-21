@@ -56,3 +56,76 @@
   color: var(--danger);
   font-size: 14px;
 }
+
+.section {
+  margin-bottom: 24px;
+}
+
+.metaList {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.metaList div {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.metaList dt {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.metaList dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.help {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.secondary {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-alt);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondary:disabled,
+.danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.danger {
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.success {
+  margin-top: 12px;
+  color: var(--success);
+  font-size: 14px;
+}

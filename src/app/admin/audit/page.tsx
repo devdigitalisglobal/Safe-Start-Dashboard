@@ -68,6 +68,11 @@ export default async function AdminAuditPage({ searchParams }: Props) {
             <option value="admin_module_published">Module published</option>
             <option value="admin_portal_user_created">Portal user created</option>
             <option value="admin_mfa_reset">MFA reset</option>
+            <option value="admin_learner_suspended">Learner suspended</option>
+            <option value="admin_learner_unsuspended">Learner unsuspended</option>
+            <option value="admin_learner_deleted">Learner deleted</option>
+            <option value="admin_learner_password_reset">Learner password reset</option>
+            <option value="admin_learner_sessions_revoked">Learner sessions revoked</option>
             <option value="admin_school_created">School created</option>
             <option value="admin_invitation_sent">Invitation sent</option>
             <option value="admin_lesson_updated">Lesson updated</option>
