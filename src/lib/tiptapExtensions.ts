@@ -1,7 +1,31 @@
+import { Mark } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Blockquote from '@tiptap/extension-blockquote';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+
+/** Brand blue inline text — serialises as `{blue}…{/blue}` in lesson markdown. */
+const TextColorMark = Mark.create({
+  name: 'textColor',
+  addAttributes() {
+    return {
+      color: {
+        default: null,
+        parseHTML: (element) => element.getAttribute('data-text-color'),
+        renderHTML: (attributes) => {
+          if (!attributes.color) return {};
+          return { 'data-text-color': attributes.color };
+        },
+      },
+    };
+  },
+  parseHTML() {
+    return [{ tag: 'span[data-text-color]' }];
+  },
+  renderHTML({ HTMLAttributes }) {
+    return ['span', HTMLAttributes, 0];
+  },
+});
 
 const CalloutBlockquote = Blockquote.extend({
   addAttributes() {
@@ -61,6 +85,7 @@ export function createFullExtensions(placeholder: string) {
       heading: { levels: [2, 3] },
     }),
     CalloutBlockquote,
+    TextColorMark,
     linkExtension,
     Placeholder.configure({ placeholder }),
   ];

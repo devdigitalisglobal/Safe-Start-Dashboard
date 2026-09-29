@@ -98,6 +98,27 @@
   font-weight: 700;
 }
 
+.bulletText :global(.textColorBlue),
+.paragraph :global(.textColorBlue),
+.list :global(.textColorBlue),
+.quickTipBody :global(.textColorBlue) {
+  color: #268cf5;
+}
+
+.quickTipBody {
+  color: #fff;
+}
+
+.quickTipBody strong {
+  color: inherit;
+  font-weight: 700;
+}
+
+.paragraph strong {
+  color: #fff;
+  font-weight: 700;
+}
+
 .calloutTip {
   margin: 0 0 8px;
   padding: 12px;

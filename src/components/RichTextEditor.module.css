@@ -122,6 +122,10 @@
   cursor: pointer;
 }
 
+.editor :global(.ProseMirror span[data-text-color='blue']) {
+  color: #268cf5;
+}
+
 .editor :global(.ProseMirror blockquote) {
   margin: 0 0 0.75em;
   padding: 12px;

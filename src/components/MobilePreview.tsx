@@ -1,6 +1,10 @@
 'use client';
 
-import { inlineMarkdownToHtml, parseMarkdownBlocks } from '@/lib/parseMarkdownBlocks';
+import {
+  inlineMarkdownToHtml,
+  parseMarkdownBlocks,
+  splitQuickTipParagraph,
+} from '@/lib/parseMarkdownBlocks';
 import styles from './MobilePreview.module.css';
 
 type Props = {
@@ -114,6 +118,21 @@ export function MobilePreview({ markdown, label = 'App preview', variant = 'mark
                   ))}
                 </ol>
               );
+            }
+
+            if (block.type === 'paragraph') {
+              const quickTip = splitQuickTipParagraph(block.text);
+              if (quickTip) {
+                return (
+                  <p key={key} className={styles.paragraph}>
+                    <strong>Quick tip: </strong>
+                    <span
+                      className={styles.quickTipBody}
+                      dangerouslySetInnerHTML={{ __html: inlineMarkdownToHtml(quickTip.body) }}
+                    />
+                  </p>
+                );
+              }
             }
 
             return (

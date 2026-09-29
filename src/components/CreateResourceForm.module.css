@@ -64,6 +64,33 @@
   font-size: 14px;
 }
 
+.guideSourceFieldset {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.guideSourceLegend {
+  padding: 0 6px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.guideSourceOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.guideSourceOption:first-of-type {
+  margin-top: 4px;
+}
+
 .hint {
   margin: -8px 0 16px;
   font-size: 13px;

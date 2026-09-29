@@ -10,6 +10,8 @@ import {
   type CmsResourceCategory,
 } from '@/lib/resourceCategories';
 import type { AdminResourceItem } from '@/lib/types/admin';
+import { isInAppGuideUrl } from '@/lib/resourceUrls';
+import { normalizeExternalUrl } from '@/lib/normalizeUrl';
 import { RichTextField } from '@/components/RichTextField';
 import { ResourceDeleteButton } from './ResourceDeleteButton';
 import formStyles from './CreateResourceForm.module.css';
@@ -29,7 +31,16 @@ export function ResourceEditForm({ item }: Props) {
   const [title, setTitle] = useState(item.title);
   const [summary, setSummary] = useState(item.summary ?? '');
   const [body, setBody] = useState(item.body ?? '');
-  const [url, setUrl] = useState(item.url ?? '');
+  const [url, setUrl] = useState(
+    item.category === 'resources' && item.url && isInAppGuideUrl(item.url) ? item.url : ''
+  );
+  const [guideLinkUrl, setGuideLinkUrl] = useState(
+    item.category === 'resources' && item.url && !isInAppGuideUrl(item.url) ? item.url : ''
+  );
+  const [guideSource, setGuideSource] = useState<'file' | 'link'>(() => {
+    if (item.category !== 'resources' || !item.url) return 'file';
+    return isInAppGuideUrl(item.url) ? 'file' : 'link';
+  });
   const [selectedMimeType, setSelectedMimeType] = useState('');
   const [orderIndex, setOrderIndex] = useState(String(item.orderIndex));  const [status, setStatus] = useState<'draft' | 'published'>(
     item.status === 'published' ? 'published' : 'draft'
@@ -49,6 +60,46 @@ export function ResourceEditForm({ item }: Props) {
       setError('Order must be a whole number of 1 or more.');
       setLoading(false);
       return;
+    }
+
+    let resolvedUrl: string | null | undefined = url.trim() || null;
+    if (category === 'resources') {
+      if (guideSource === 'file') {
+        if (!url.trim()) {
+          setError('Choose a guide file from the media library, or switch to External link.');
+          setLoading(false);
+          return;
+        }
+        resolvedUrl = url.trim();
+      } else {
+        if (!guideLinkUrl.trim()) {
+          setError('Enter the external URL for this guide.');
+          setLoading(false);
+          return;
+        }
+        try {
+          resolvedUrl = normalizeExternalUrl(guideLinkUrl);
+        } catch {
+          setError('Enter a valid URL (e.g. example.com or https://…).');
+          setLoading(false);
+          return;
+        }
+      }
+    }
+
+    if (category === 'helpful_links') {
+      if (!url.trim()) {
+        setError('External URL is required for helpful links.');
+        setLoading(false);
+        return;
+      }
+      try {
+        resolvedUrl = normalizeExternalUrl(url);
+      } catch {
+        setError('Enter a valid URL (e.g. example.com or https://…).');
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -72,7 +123,10 @@ export function ResourceEditForm({ item }: Props) {
           title: title.trim(),
           summary: summary.trim() || null,
           body: body.trim() || null,
-          url: url.trim() || null,
+          url:
+            category === 'resources' || category === 'helpful_links'
+              ? resolvedUrl
+              : url.trim() || null,
           orderIndex: parsedOrder,
           status,
         }),
@@ -107,7 +161,14 @@ export function ResourceEditForm({ item }: Props) {
           <select
             className={formStyles.input}
             value={category}
-            onChange={(e) => setCategory(e.target.value as CmsResourceCategory)}
+            onChange={(e) => {
+              const next = e.target.value as CmsResourceCategory;
+              setCategory(next);
+              if (next !== 'resources') {
+                setGuideSource('file');
+                setGuideLinkUrl('');
+              }
+            }}
           >
             {CMS_RESOURCE_CATEGORIES.map((entry) => (
               <option key={entry.value} value={entry.value}>
@@ -129,20 +190,58 @@ export function ResourceEditForm({ item }: Props) {
 
         {category === 'resources' ? (
           <>
-            <MediaPicker
-              label="Guide file — pick a JPG or PDF from the media library"
-              selectedUrl={url}
-              selectedAlt={title || 'Guide file'}
-              selectedMimeType={selectedMimeType}
-              allowDocuments
-              onSelect={(selectedUrl, _alt, mimeType) => {
-                setUrl(selectedUrl);
-                setSelectedMimeType(mimeType ?? '');
-              }}
-            />
-            <p className={formStyles.hint}>
-              Leave summary empty so learners tap the guide to open the file directly.
-            </p>
+            <fieldset className={formStyles.guideSourceFieldset}>
+              <legend className={formStyles.guideSourceLegend}>Guide destination</legend>
+              <label className={formStyles.guideSourceOption}>
+                <input
+                  type="radio"
+                  name="guideSourceEdit"
+                  checked={guideSource === 'file'}
+                  onChange={() => setGuideSource('file')}
+                />
+                File from media library (JPG or PDF)
+              </label>
+              <label className={formStyles.guideSourceOption}>
+                <input
+                  type="radio"
+                  name="guideSourceEdit"
+                  checked={guideSource === 'link'}
+                  onChange={() => setGuideSource('link')}
+                />
+                External link (opens in browser)
+              </label>
+            </fieldset>
+
+            {guideSource === 'file' ? (
+              <>
+                <MediaPicker
+                  label="Guide file"
+                  selectedUrl={url}
+                  selectedAlt={title || 'Guide file'}
+                  selectedMimeType={selectedMimeType}
+                  allowDocuments
+                  onSelect={(selectedUrl, _alt, mimeType) => {
+                    setUrl(selectedUrl);
+                    setSelectedMimeType(mimeType ?? '');
+                  }}
+                />
+                <p className={formStyles.hint}>
+                  Leave summary empty so learners open the file in the app.
+                </p>
+              </>
+            ) : (
+              <label className={formStyles.label}>
+                External URL
+                <input
+                  className={formStyles.input}
+                  value={guideLinkUrl}
+                  onChange={(e) => setGuideLinkUrl(e.target.value)}
+                  placeholder="https://…"
+                  inputMode="url"
+                  autoComplete="url"
+                />
+              </label>
+            )}
           </>
         ) : null}
 
@@ -195,7 +294,12 @@ export function ResourceEditForm({ item }: Props) {
         {category === 'helpful_links' ? (
           <label className={formStyles.label}>
             External URL
-            <input className={formStyles.input} value={url} onChange={(e) => setUrl(e.target.value)} />
+            <input
+              className={formStyles.input}
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com or example.com"
+            />
           </label>
         ) : null}
 
