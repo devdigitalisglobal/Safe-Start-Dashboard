@@ -96,12 +96,8 @@ export function LearnerDetailActions({ learner }: Props) {
             <dd>{learner.progress.modulesInProgress}</dd>
           </div>
           <div>
-            <dt>Starting Grid</dt>
-            <dd>{learner.progress.startingGridCompleted ? 'Completed' : 'Not completed'}</dd>
-          </div>
-          <div>
-            <dt>Finish Line</dt>
-            <dd>{learner.progress.finishLineCompleted ? 'Completed' : 'Not completed'}</dd>
+            <dt>Course complete</dt>
+            <dd>{learner.progress.courseCompleted ? 'Yes' : 'No'}</dd>
           </div>
         </dl>
       </section>

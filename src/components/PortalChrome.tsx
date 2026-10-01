@@ -45,14 +45,6 @@ function buildNav(profile: UserProfile) {
       },
     ];
 
-    if (isStaffRole(profile.role)) {
-      contentItems.push({
-        href: '/admin/assessments',
-        label: 'Assessments',
-        isActive: (pathname) => pathname.startsWith('/admin/assessments'),
-      });
-    }
-
     sections.push({
       title: profile.role === 'reviewer' ? 'Review' : 'Content',
       items: contentItems,

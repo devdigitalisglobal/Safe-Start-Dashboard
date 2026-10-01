@@ -6,7 +6,7 @@ import styles from './AdminNav.module.css';
 
 type Props = {
 
-  active: 'modules' | 'assessments' | 'schools' | 'audit';
+  active: 'modules' | 'schools' | 'audit';
 
   staffOnly?: boolean;
 
@@ -29,18 +29,6 @@ export function AdminNav({ active, staffOnly = true }: Props) {
       {staffOnly ? (
 
         <>
-
-          <Link
-
-            href="/admin/assessments"
-
-            className={active === 'assessments' ? styles.active : undefined}
-
-          >
-
-            Assessments
-
-          </Link>
 
           <Link href="/admin/schools" className={active === 'schools' ? styles.active : undefined}>
 

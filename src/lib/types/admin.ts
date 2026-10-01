@@ -273,7 +273,6 @@ export type AdminLearnerDetail = AdminLearnerSummary & {
   progress: {
     modulesCompleted: number;
     modulesInProgress: number;
-    startingGridCompleted: boolean;
-    finishLineCompleted: boolean;
+    courseCompleted: boolean;
   };
 };
